@@ -1,0 +1,100 @@
+9-12 JLable, ScrollBar, GridLayoutManager
+*
+ex) GridLayout, ScrollBar, JLabel
+JPanel p = new JPanel();
+p.setLayout(new GridLayout(3,2)); // Panel p를 grid layout (3:2)로 설정,자식component들은 알아서 맞춰 들어감_South이런거 없음
+
+Label a = new JLabel("A");
+JScrollBar scrollA = new JScrollBar(Adjustable.HORIZANTAL,0,0,0,255);
+// argument 5개: 수직or수평(Adjustable.HORIZONTAL), ScrollBar초기값, Bar크기, MIN, MAX
+// argument 1개: 수직or수평
+// argument 0개도 가능
+
+p.add(a);	// Label 추가
+p.add(scrollA);  // ScrollBar 추가
+
+scrollA.setBlockIncrement(50); 양쪽의 화살표눌렀을때 움직이는 범위
+
+
+* AdjustmentListener
+- public void adjustMentValueChanged(AdjustmentEvent e){}
+- ScrollBar가 움직였을때 발생하는 이벤트 처리, 함수 1개만 존재
+ex)
+public void adjustmentValueChanged(AdjustementEvent e){
+  labelA.setText("a value: " + scrollA.getValue());  // scrollBar위치값으로 JLabel의 string을 변경해주는 일
+}
+------------------------------------------------
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class ColorSelect extends JFrame implements AdjustmentListener{
+    private  JLabel redLabel;
+    private  JLabel greenLabel;
+    private  JLabel blueLabel;
+
+    private JScrollBar red;
+    private JScrollBar green;
+    private JScrollBar blue;
+    
+    private JPanel colorPanel;
+
+    public ColorSelect(){
+        setTitle("ColorSelect");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        Container contentPane = getContentPane();
+
+        JPanel p = new JPanel();
+        p.setLayout(new GridLayout(3,2));   //Panel p의 layout을 grid(3,2)로 지정
+
+        p.add(redLabel = new JLabel("Red 0"));  // JLabel을 p에 추가, 따로 Grid안에서 위치 설정하는건 없음, 그냥 알아서 들어감
+        p.add(red = new JScrollBar(Adjustable.HORIZONTAL, 0, 0, 0, 255)); //ScrollBar를 p에 추가
+        red.setBlockIncrement(16);  // ScrollBar red 이동간격
+        red.addAdjustmentListener(this);    // scrollBar에 eventHandler등록
+
+        p.add(greenLabel = new JLabel("Green 0"));
+        p.add(green = new JScrollBar(Adjustable.HORIZONTAL, 0, 0, 0, 255));
+        green.setBlockIncrement(16);
+        green.addAdjustmentListener(this);
+
+        p.add(blueLabel = new JLabel("Blue 0"));
+        p.add(blue = new JScrollBar(Adjustable.HORIZONTAL, 0, 0, 0, 255));
+        blue.setBlockIncrement(16);
+        blue.addAdjustmentListener(this);
+
+        contentPane.add(p, "South");    // label&ScrollBar 붙은 panel 붙이기
+        
+        colorPanel = new JPanel();
+        colorPanel.setBackground(new Color(0, 0, 0));
+        contentPane.add(colorPanel, "Center");  // 메인판넬 붙이기
+    }
+    
+    @Override
+    public void adjustmentValueChanged(AdjustmentEvent e) { // scrollBar움직이는 이벤트 발생시 호출
+        redLabel.setText("Red" + red.getValue());
+        greenLabel.setText("Green" + green.getValue());
+        blueLabel.setText("Blue" + blue.getValue());
+        colorPanel.setBackground(new Color(red.getValue(), green.getValue(), blue.getValue()));
+
+        colorPanel.repaint();
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new ColorSelect();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
+	

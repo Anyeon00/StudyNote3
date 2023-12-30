@@ -1,0 +1,85 @@
+9-11 ComboBox
+
+* 버튼과 같은 취급
+
+ex) -Constructor에서
+JComboBox style = new JComboBox();
+style.addItem("String1");		//button에 해당한다고 생각
+style.addItem("String2");
+style.addActionListener(this);	//this:함수구현객체, 구현해주기
+
+JPanel comboPanel = new JPanel(); // 콤보박스 판넬
+comboPanel.add(style);
+getContentPane().add(comboPanel, "South"); //상위 판넬에 콤보박스 판넬 붙이기
+
+-actionPerformed함수에서
+JComboBox source = (JComboBox)e.getSource(); // e는 파라미터 ActionEvent e
+String item = (String)source.getSelectedItem(); 
+// comboBox 이벤트 발생시 해당 버튼의 String을 가져와서 처리
+
+-------------------------------------------
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class ComboBoxTestPanel extends JPanel{
+    public ComboBoxTestPanel(){
+        setStyle("Serif");
+    }
+
+    public void setStyle(String s) {
+        setFont(new Font(s, Font.PLAIN, 12));
+        repaint();
+    }
+
+    public void paintCompoenent(Graphics g) {
+        super.paintComponent(g);
+        g.drawString("The quick brown fox jumps over the lazy dog.", 0, 50);
+    }
+}
+
+class ComboBoxFrame extends JFrame implements ActionListener{
+    private ComboBoxTestPanel panel;
+    private JComboBox style;
+    ComboBoxFrame(){
+        setTitle("ComboBoxTest");
+        setSize(300, 200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+                System.exit(0);
+            }
+        });
+
+        style = new JComboBox();
+        style.setEditable(true);    // ComboBox Item 수정가능여부
+        style.addItem("Serif");
+        style.addItem("SansSerif");
+        style.addItem("Monospaced");
+        style.addItem("Dialog");
+        style.addItem("DialogInput");
+        style.addActionListener(this);
+
+        JPanel p = new JPanel();
+        p.add(style);
+        getContentPane().add(p, "South");
+        panel = new ComboBoxTestPanel();
+        getContentPane().add(panel, "Center");
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        JComboBox source = (JComboBox) e.getSource();
+        String item = (String) source.getSelectedItem();    // JComboBox에서 getSource
+        panel.setStyle(item);
+    }
+}
+public class ComboBoxTest {
+    public static void main(String[] args) {
+        JFrame frame = new ComboBoxFrame();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+

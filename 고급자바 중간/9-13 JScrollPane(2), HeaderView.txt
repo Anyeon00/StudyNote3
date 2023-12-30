@@ -1,0 +1,29 @@
+9-13 JScrollPane, HeaderView
+
+panel에 scroll을 붙이는 두가지방법
+1 - 예제(요즘방법)
+* 스크롤바를 사용할 판넬을 JScrollPane의 argument에 넣어 생성해 사용
+ex) JPanel p = new JPanel();
+JScrollPane sp = new JScrollPane(p);
+
+
+
+
+2 - 옛날방법(다음예제) 안중요함(9-14예제 생략)
+
+
+
+
+HeaderView
+
+논리적 크기가 지정된 Panel을 상위 Panel의 상단이나 좌측에 붙이기
+
+setColumnHeaderView(p); : 판넬을 위에다 갖다 붙여라 // p는 JPanel
+ setRowHeaderView(p); : 판넬을 왼쪽에다 갖다 붙여라
+ (직접 만든 Panel을 위나 왼쪽에 갖다 붙일 수 있음)
+
+* 함수 setPrefferedSize(new Dimention (w, h)): 화면의 논리적인 크기를 지정
+(Panel 클래스 안에서 사용할수 있음)(또는 reference와 참조자(.)를 이용해 설정가능)
+
+
+어케하는지 모르겠다

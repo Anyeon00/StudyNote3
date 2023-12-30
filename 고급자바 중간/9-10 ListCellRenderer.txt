@@ -1,0 +1,151 @@
+9-10 ListCellRenderer
+
+Jlist에 속하는 각각의 항목을 꾸며주는 JPanel 생성
+* TreeCellRenderer, TableCellRenderer 사용법도 유사함
+
+Cell : list에 저장된 string이 나오는 각 항목들은 각 panel로 이루어져잇는데 그 panel
+Cell Rendering : cell마다 다른 graphics설정으로 그려주는것(폰트등)
+* (Render 뜻: 만들어주다)
+
+구현방법
+1. Frame에서 implements ListSelectionListener 후 이벤트핸들러 구현
+ public void valueChanged(ListSelectionEvent e){ // List의 항목이 선택되었을때
+   Jlist source = (JList)e.getSource();
+ } // 세부내용은 아래코드참고
+ 
+2. JList list = new JList(model);
+ list.setCellRenderer(new ListCellRenderer구현객체);  
+ // JList에 ListCellRenederer객체 setting
+
+3. ??? implements ListCellRenderer	  // ListCellRenderer 구현객체 만들기
+- 함수 1개 존재
+public Component getListCellRendererComponent(	// (리턴타입:Component _button도 return가능)
+final Jlist list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus){ 
+// argument항목, 1: Jlist객체, 2: 아래 코드에선 Font가 사용됨, 3: Jlist의 몇번째 항목인지, 4: 항목이 선택되었는가, 5: focus되었는가
+// argument의 index를 이용해 list의 해당 index번째 component의 graphics를 세팅
+
+  return new JPanel(){	// anonymouse object사용해서 panel 구현 후 return, 따로 만들어서 사용해도 상관X
+
+    public void paintComponent(Graphics g){
+      Font font = (Font)value;		//argument로 받아온 font사용하기 위해 저장
+      g.drawString("hello", 0, 0);
+      // 세부코드는 아래 코드참고(선택항목 배경 색바꾸기 등등)
+    }
+
+    public Dimension getPreferredSize(){	// panel 크기정해주기위해 overriding해줌
+      int width = ?;
+      int height = ?;		// 내용은 아래 코드 참고
+    return new Dimension(width, height);
+    }
+}
+
+
+* JScrollPane에 JList를 argument로 삽입가능
+위 JScrollPane을 사용할 Panel에 붙여서 사용
+=> JPanel <- JScrollPane <- JList
+
+-----------------------------------------------------------------------------
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+class FontCellRenderer implements ListCellRenderer{     // JList에 setting될 ListCellRender구현객체 생성
+    @Override
+    public Component getListCellRendererComponent(
+            JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+
+
+        return new JPanel(){    // anonymous object
+            public void paintCompoenet(Graphics g) {
+                Font font = (Font) value;
+                String text = font.getFamily();
+                FontMetrics fm = g.getFontMetrics(font);
+                g.setColor(isSelected   // List항목이 isSlected됐을때
+                        // list.getSelectionBackground()    // 배경색깔기준으로 색변경
+                        // : list.getBackground();
+                        ? Color.red
+                        : Color.blue
+                );
+                g.fillRect(0,0,getWidth(),getHeight());
+                g.setColor(isSelected ? list.getSelectionForeground() : list.getForeground());
+                g.setFont(font);
+                g.drawString(text, 0, fm.getAscent());
+            }
+            public Dimension getPreferredSize(){
+                Font font = (Font) value;
+                String text = font.getFamily();
+                Graphics g = getGraphics();
+                FontMetrics fm = g.getFontMetrics(font);
+                return new Dimension(fm.stringWidth(text), fm.getHeight());
+            }
+        };
+    }
+
+}
+class ListRenderingPanel extends JPanel{
+    private Font currentFont;
+    ListRenderingPanel(){
+        setFont(new Font("Serif", Font.PLAIN, 12));
+    }
+
+    // JList에서 event가 생성될때마다 setFont가 호출되어 repaint
+    public void setFont(Font f) {   // font setting마다 repaint하도록 overriding
+        currentFont = f;
+        repaint();
+    }
+
+    public void paintCompoenet(Graphics g) {
+        super.paintComponent(g);
+        g.setFont(currentFont);
+        g.drawString("The quck brown fox jumps over the lazy dog", 0, 50);
+    }
+}
+class ListRenderingFrame extends JFrame implements ListSelectionListener {  // ListSelection이벤트 핸들러 리스너 구현
+    private ListRenderingPanel panel;
+    ListRenderingFrame(){
+        setTitle("ListRenderingTest");
+        setSize(300, 200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        Vector fonts = new Vector();    // JList에서 쓸 자료구조 생성
+        fonts.add(new Font("Serif", Font.PLAIN, 12));
+        fonts.add(new Font("SansSerif", Font.PLAIN, 12));
+        fonts.add(new Font("Monospaced", Font.PLAIN, 12));
+        fonts.add(new Font("Dialog", Font.PLAIN, 12));
+        fonts.add(new Font("DialogInput", Font.PLAIN, 12));
+
+        JList fontList = new JList(fonts);  // JList생성
+        fontList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 다중선택여부
+        fontList.setCellRenderer(new FontCellRenderer());   // JList에 ListCellRenderer setting
+        fontList.addListSelectionListener(this);    // JList에 JList선택 이벤트핸들러 등록
+
+        JScrollPane scrollPane = new JScrollPane(fontList); // JScrollPane에 JList 넣기
+
+        JPanel p = new JPanel();
+        p.add(scrollPane);  // JPanel p에 JList들은 JScrollPane 넣기
+
+        getContentPane().add(p, "South");   // JList들은 Panel 하단에 배치
+        panel = new ListRenderingPanel();
+        getContentPane().add(panel, "Center");  // 메인화면 Center에 배치
+    }
+    @Override
+    public void valueChanged(ListSelectionEvent e) {    // JList선택 이벤트핸들러 구현
+        JList source = (JList) e.getSource();
+        Font font = (Font) source.getSelectedValue();
+        panel.setFont(font);
+    }
+}
+public class ListRenderingTest {
+    public static void main(String[] args) {
+        JFrame frame = new ListRenderingFrame();
+        frame.setVisible(true);
+    }
+}
+
+

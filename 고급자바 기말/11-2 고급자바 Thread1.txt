@@ -1,0 +1,108 @@
+11-2 고급자바 Thread1
+
+main프로그램에서 thread사용방법
+1. thread instantiation
+2. thread객체.start();
+
+* Thread 구현방법 2가지
+1. extends Thread
+- run() 함수 구현 ( 독립적으로 작용하는 부분)
+
+2. implements Runnable
+- 상속은 1개밖에 못받으므로 thread외에 상속을 받아야하는 경우
+- run() 함수 구현(thread객체가 실행할 코드)
+- implements Runnable 객체를 사용하거나, thread객체의 argument에 Runnable 인터페이스를 anonymous object로 넣어 사용하거나
+
+
+* Thread API
+Thread member function :
+ thread1.setPriority();	// thread들간의 우선순위 지정
+ thread1.join();		// thread가 끝날때까지 기다림
+ thread1.yeild();		// 현재 사용중인 cpu를 다른 thread에게 양보
+ thread1.getName();	// thread이름
+ thread1.getPriority();	// thread의 우선순위
+ thread1.isDaemon();	// background에서 돌아가는가
+ thread1.isAlive();		// 살아있는가
+ thread1.wait(); // 숫자가 들어가면 해당 시간만큼 suspend
+	   // 0이 들어가면 task1.notify();가 호출될때까지 suspend
+
+Thread static function :
+Thread.sleep(n);		// n/1000 초 동안 sleep
+
+예약어 : synchronized
+- 상호배제해결	// 해당 함수는 한번에 하나의 thread만 실행해야함
+- 함수에 modifier(예약어) 명시하여 사용
+- Vector의 public 함수들에 사용됨
+ex) static synchronized void compute(){~}
+
+ThreadLocal 클래스
+- thread마다 개별적으로 가지는 객체
+
+
+* Thread implementation
+1. extends Thread ex)
+class XXX extends Thread{
+  public static void main(String[] args){
+    ...
+    XXX thread = new XXX();
+    thread.start();		// 만들어진 thread는 아래의 run()을 실행함
+
+    ...B...	// main thread가 실행할 코드
+  }
+  public void run(){
+    ...A...	// child thread가 실행할 코드
+  }
+}
+// B부분과 A부분이 동시에 실행됨
+
+2. thread의 argument에 Runnable인터페이스를 anonymous object로 
+ex)
+public static void main(String[] args){
+  Thread thread2 = new Thread(new Runnable(){	// interface 구현객체를 thread의 argument로
+    public void run(){ for (int i = 0; i < 5; i++) ...}		// run() 구현
+  }
+}
+
+
+* Thread 그룹핑과 Thread 개별정보 리스트
+- Thread생성시 자식 Thread들을 그룹핑
+- API
+ThreadGroup 클래스
+Thread.currentThread();
+Thread.getThreadGroup();
+threadGroup1.getParent();
+threadGroup1.activeCount();	// group에 속한 thread중 몇개가 active하냐
+threadGroup1.activeGroupCount();
+threadGroup1.getName();
+threadGroup1.getMaxPriority();
+threadGroup1.isDaemon();	
+ 
+
+* data에 lock 거는법 : synchronized, .wait()함수
+
+예약어 synchronized 사용 ex)
+public void run(){
+  Object resource1 = "resource1";
+  synchronized(resource1){	// ressource1을 lock
+    sout("locked resource 1");
+    ~
+  } // 빠져나오면 unlock
+}
+
+object클래스 wait()함수 사용 ex)
+// thread객체 대상으로 예를들어 task1이라는 thread에대해
+task1.wait(); // 숫자가 들어가면 해당 시간만큼 suspend
+	   // 0이 들어가면 task1.notify();가 호출될때까지 suspend
+
+
+* DeadLock
+- lock으로 인한 교착상태
+- 해결방법 : access시 모든 스레드가 data들을 같은 순서로 접근
+예를들어 thread1이 데이터 A - B 순서로 access하면 thread2도 A - B 순서로 접근
+
+
+* main program도 thread임
+
+
+
+

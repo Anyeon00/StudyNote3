@@ -1,0 +1,60 @@
+13-3 고급자바 serialization, version control
+
+serialization 직렬화
+장치 독립적인 방식으로 데이터를 송수신하는 방법
+ex) 프로세스간 주고받기, 네트워크상으로 주고받기, 하드디스크에서 메모리로 이동하기
+- reflection기능으로 인해 가능
+
+예제프로그램
+10-1 Serializer.java : save시키고 load해보기 그리고 프로세스간 복사하여 전송
+ex)
+DataStructure 라는 자료구조 객체 생성
+
+* transient modifier : serialzable 클래스의 데이터멤버중 serialization하지 않을 함수앞에 사용
+
+---------------------------------------------------
+[저장하고 싶은 객체 Class가 Serializable을 구현]
+ex) public class DataStructure implements Serializable
+* Serializable인터페이스에 함수가 구현돼있어 override안해도됨
+* 데이터멤버에 저장된 값 모두 저장하게 됨
+
+[save기능]
+ex)
+DataStructure ds = new DataStructure(); // _저장할 객체
+ds.add(10);
+ds.add("kim");	
+File f = new File("datastructure.ser");	// 파일 오픈 _확장자명 ser
+ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(f));  // 파일 f에다가, 저장하는 함수를 사용하기위한 ObjectOutputStream객체 생성
+out.writeObject(ds); // writeObject함수로 객체 저장(Serializable로 type casting해줘야할수도)
+out.close();
+// 위 세줄 함수로 만들어 사용하기 _store(f, ds);
+
+[load기능]
+File f = new File("datastructure.ser"); // 이 파일에서 load
+ObjectInputStream in = new ObjectInpuStream(new FileInputStream(f));
+Object obj = in.readObject();
+DataStructure ds = (DataStructure)obj;
+// 마찬가지로 obj를 return하는 함수로 만들어 사용(2줄만필요)
+
+[복사전송] 23:30초참고
+* pipe로 내보내는데 그 끝이 다시 내 프로세스에 연결됨
+이 pipe를 이용해 객체를 내보내고 다시 받는 행위를 통해 deep copy함
+---------------------------------------------------------------------
+version control
+serialization할 자료구조객체 class내용에 변경사항이 생기면(함수가 추가된거나) serialization시 오류가생기는데 이를 control하기 위한 제도
+
+방법
+-> 1번 - 자료구조 클래스에 version control을 위한 데이터멤버 하나를 추가
+ex) private static final long serialVersionUID = 172304710274189218918L;
+-> 2번 - 도스 창에서 serialver -classpath 절대주소 를 실행하고 출력된 값을 받아와서 데이터멤버에 저장
+ex) serialver -classpath ..\.. je3.serialization.SerialIntList
+
+* 자료구조에 변경사항이 생길때마다 Update해야함
+
+
+
+
+
+
+
+

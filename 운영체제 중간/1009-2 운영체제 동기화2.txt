@@ -1,0 +1,115 @@
+1009-2 운영체제 동기화2
+
+상호배제 알고리즘 이어서..
+
+해결한 방법:
+Dekker 알고리즘
+: 방법 1(turn변수)와 방법2인가3(flag변수)를 같이 쓰는 방법,
+들어갈때 -> 일단 나 들어가고싶어 flag 1로 바꿈 / 상대도 flag 1인지 검사 / 상대도 1이면 turn 확인해 들어갈지 결정 / 상대 턴이면 내 flag 0으로, 내 턴이면 flag 1로 변경후 진입
+나올때 -> trun 상대걸로 변경, flag 0으로
+=> 즉 flag변수부터 확인후, 같으면 turn을 비교해 진입여부 결정
+ex) process 0번 입장
+flag[0] = true;	// 들어가고 싶으니 flag 1로 변경
+while (flag[1]){	// 상대 flag변수 확인 (_while반복하다가 time qantum다돼서 문맥교환일어남)
+  if (turn == 1){	// 상대도 1이면 turn으로 차례확인 
+    flag[0] = false;	
+    while (turn == 1);
+    flag[0] = true;
+  }
+}
+--Critical Section--
+turn = 1;
+flag[0] = 0;
+
+문제- 6주차 프로세스 동기화2 5:50초
+과정에서 처음 막혀서 while문 돌다가 time quantum다돼서 문맥교환 일어나서 p1마저 처리됨
+
+
+Peterson 알고리즘
+: Dekker알고리즘에서는 CS빠져나온 후 turn을 변경해줬는데, 여기선 CS들어가기 전에 바꿔줌,
+들어갈때 -> flag를 1로바꾸고 turn을 상대 걸로 변경 / 상대 flag와 turn을 동시에 확인후 걸리면 반복문 갇힘 / 결과적으로 turn을 먼저 상대걸로 바꿔준(진입을시도한) 쪽이 들어감
+나올때 -> flag 변수를 0으로 변경
+ex) process 0번 입장
+flag[0] = true;
+turn = 1;
+while (flag[1] && turn == 1);
+--Critical Section--
+flag[0] = 0;
+* 외워서 쓰는 문제 X, 코드 진행중 상황설명하는 문제
+
+
+==>> 지금까지 알고리즘을 이용한 해결법 -상대를 기다리게 함
+
+하드웨어적 상호 배제 해결법
+- 위 알고리즘들에서 if문으로 상대를 확인하고 내 상태를 변경해주는 것을 Test and Set, 
+이 Test와 Set사이에 문맥교환이 일어나는게 문제, 이를 하나의 기계어로 만듦
+- 이 기계어를 실행하는 동안 인터럽트를 받지않음(문맥교환이 안일어남) -> 원자성, 분리불가능
+
+TS()명령어 (Test and Set)
+int Test-and-Set(int *target){	 // target : flag변수
+  int temp = *target;  
+  *target = 1;	// target(flag)를 1로 변경
+  return temp;	// 변경전 값을 return;
+}
+-> TS() 실행시 무조건 flag가 1(true)로 Set, Set하기 전에 무슨값이었는지 return
+-> 
+실행전 target -> false : No one in CS	/  true : Anyone in CS
+실행후 target -> true : I will enter CS	/  true : He is still in CS
+Return Value -> false : Accept	/  true : reject
+
+TS명령어 이용 알고리즘
+while(Test-and-Set(&lock));	// true가 return되면 while문에 갇힘, false가 return되면 진입
+--Critical Section--
+lock = 0;		// 누가 들어가있으면 lock == 1
+
+* 다른 프로세스가 CS에 들어가서 ready상태에 멈춰있는데 내가 running하며 time quantum이 끝날때까지 의미없이 계속 반복문을 돌면서 확인을 반복하는일
+: busy wating
+->이 경우 block 시키는 기법을 활용 (CS에서 딴놈이 빠져나오면 wakeup)
+=> 세머퍼(semaphore) 기법
+
+
+세머퍼 기법
+- 계속 확인하는 busy wating시 block시킴
+- 세머퍼 변수 : 정수형 변수 (현재 CS에 진입가능한 프로세스 개수)
+- P()연산, V()연산, 초기화연산으로만 접근가능 _P(),V()는 분리불가능연산(인터럽트안받음)
+
+* P()연산 : 세머퍼 변수를 감소시킴 & 임계지역진입을 요구 (lock을 걺)
+  V()연산 : 세머퍼 변수 증가시킴 & block된 프로세스 wakeup시킴 (lock을 풂)
+
+이진 세머퍼
+- 세머퍼 변수가 0 or 1만 갖는 경우
+카운팅 세머퍼
+- 세머퍼 변수가 0 이상의 모든 정수값을 갖는 경우 
+
+세머퍼 이용 알고리즘
+P(active);
+--Critical Section--	// (active = 1) 임계지역에 프로세스 없음, (active = 0) 임계지역에 프로세스 존재
+V(active);
+
+세머퍼로 여러 문제 해결가능
+- 상호 배제 문제
+- 프로세스 동기화 문제
+
+
+* clock이아니라 하나의 기계어가 끝나고 interrupt가 들어옴
+
+7주차 프로세스 동기화3영상 - 8:40 문제(counting semaphor의 경우)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

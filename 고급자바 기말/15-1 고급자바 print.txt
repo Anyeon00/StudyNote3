@@ -1,0 +1,18 @@
+15-1 고급자바 print
+
+PrintJob 객체
+
+Printable 인터페이스
+- public int print(Graphics g, PageFormat format, int pagenum){}
+
+
+
+중요내용 * //두번째 예제 프로그램 JuliaSet2.java
+Print용 graphics객체와 paintComponent함수를 이용해 print함
+Graphics2D g2 = (Graphics2D) g;
+c.paint(g); // 여기서 paintcomponent함수호출
+public void paintComponent(Graphics g){
+ g.drawImage(~);
+}
+
+캡스톤 디자인에 (그림판) 프린트기능만 알면됨

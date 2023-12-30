@@ -1,0 +1,99 @@
+9-21 Dialog
+
+modal : Dialog창이 뜨고 다른 버튼을 사용할수 없는 경우
+modaless : '' 사용할 수 있는 경우
+
+Dialog 클래스를 상속받는 객체 구현해서 사용
+
+ex) Dialog Class 구현 예시
+class AboutDialog extends JDialog{
+  public AboutDialog(JFrame parent){
+    super(parent, "About DialogTest", true);	// boolean: modal인지 modaless인지
+    // Dialog Component 구현 예시는 아래 코드 참고
+  }
+}
+--------------------------------------
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class DialogFrame extends JFrame implements ActionListener{
+    private JMenuItem aboutItem;
+    private JMenuItem exitItem;
+    private AboutDialog dialog;
+    DialogFrame(){
+        setTitle("DialogTest");
+        setSize(300,300);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        JMenuBar mbar = new JMenuBar();
+        setJMenuBar(mbar);
+        JMenu fileMenue = new JMenu("File");
+        mbar.add(fileMenue);
+        aboutItem = new JMenuItem("About");     // About Dialog띄우는 버튼
+        aboutItem.addActionListener(this);
+        fileMenue.add(aboutItem);
+        exitItem = new JMenuItem("Exit");       // About Dialog띄우는 버튼
+        aboutItem.addActionListener(this);
+        fileMenue.add(exitItem);
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == aboutItem) {  // JMenuItem AboutItem이 실행된 경우
+            if (dialog == null) {   // 이 Frame에서 Dialog가 아직 한번도 생성 안됐으면
+                dialog = new AboutDialog(this);
+            }
+            dialog.setVisible(true);    // Dialog 실행
+        } else if (source == exitItem) {    // JMenuItem exitItem이 실행된 경우
+            System.exit(0);     // Frame exit
+        }
+    }
+}
+class AboutDialog extends JDialog{      // JDialog를 상속받은 Dialog객체 구현
+    AboutDialog(JFrame parent){
+        super(parent, "About DialogTest", true);    // boolean: modal인지 modaless인지
+        setSize(250,150);
+
+        // 이하 Dialog Component 구성 코드
+        Box b = Box.createVerticalBox();
+        b.add(Box.createGlue());
+        b.add(new JLabel("Core Java"));
+        b.add(new JLabel("By Cay HorstMann and Gary Cornell"));
+        b.add(Box.createGlue());
+        getContentPane().add(b, "Center");  // Box b를 Center에 배치
+
+        JPanel p2 = new JPanel();
+        JButton ok = new JButton("Ok");
+        p2.add(ok);
+        ok.addActionListener((e) ->{
+            setVisible(false);      // Dialog에서 Ok버튼 누르면
+        });
+        getContentPane().add(p2, "South");  // ok버튼 Panel을 South에 배치
+
+    }
+}
+public class DialogTest {
+    public static void main(String[] args) {
+        JFrame frame = new DialogFrame();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

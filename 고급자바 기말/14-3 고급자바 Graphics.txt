@@ -1,0 +1,22 @@
+14-3 고급자바 Graphics
+
+Graphics객체 3가지
+1 윈도우
+2 이미지
+3 프린트
+
+
+탭창만들기
+JTabbedPane tpane = new JTabbedPane();
+tpane.addTab(~);
+
+애니메이션효과
+1) 그렸다지우기반복
+2) 
+
+
+
+
+*
+그림 기울기나 크기조절 같은 함수
+shear(),rotate(),scale()같은 함수 쓰려면 Graphics함수를 Graphics2D로 typecasting해서 사용

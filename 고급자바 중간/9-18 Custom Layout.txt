@@ -1,0 +1,9 @@
+9-18 Layout Custom하기
+
+Circle Layout 만들어보기
+- 별로 쓸일 없음
+
+ex)
+class CircleLayout implements LayoutManager{
+
+

@@ -1,0 +1,63 @@
+11-1 고급자바 Input,Output2
+
+* 파일압축하기
+
+일반파일 -> ".gz"
+폴더파일 -> ".zip"
+
+
+GZIPOutputStream 클래스
+압축 : 입출력할때 stream에 뭔가 씌워서 보내면 압축되어 보내짐
+-> decorator pattern으로 iostream에 GZIPOutputStream을 씌워서(rapping해서) 압축
+ex) GZIPOutputStream out = new GZIPOutputStream(new FileOutputStream(file));
+
+
+* 파일에서 필터링하기
+ex) HTML파일에서 < 와 > 사이에 있는 글자들(태그들)은 다 제거 _주석만 남음
+ex) 대문자를 소문자로 바꾸기
+
+
+
+
+FilterReader 클래스
+- 위에 GZIPOutputStream클래스같은 decorator를 직접 구현하는 예시
+
+ex) 대문자를 소문자로 바꾸는 Filter 클래스 구현 예시
+1. FilterReader를 extends한 Reader 클래스 만들고, read()함수 2개 override하기
+ex) 
+public class RemoveHTMLReader extends FilterReader{
+  public RemoveHTMLReader(Reader in) throws IOException { 
+    super(in); 
+  }	// super constructor 호출해줘야함
+  
+  // read 함수 2개 override 해야함 (어떻게 필터링할지 구현)
+  public int read() throw IOException {	// char 1개 단위로 처리하는 read함수
+    int c = super.read();	// 원본 reader내용(char 한개)을 읽음
+    return (c == -1 ? c : Character.toLowercase((char)c));	// 대문자를 소문자로 바꾸는 Filter 구현,
+    // -1은 EOD이므로 -1이 아닌 경우에만 toLowercase실행
+  }
+  public int read(char[ ] buf, int from, int len) throw IOException {	// 프로그램 buffer에 있는 data로 처리
+    int result = super.read(buf, from, len);
+    for(int i = from; i < from+result; i++){
+      buf[i] = Character.toLowercase(buf[i]);
+    }
+    return result;
+  }  
+}
+2. 만든 Reader클래스 메인프로그램에서 wrapping해서 사용(decorator pattern)
+ex) 
+BufferedReader in = new BufferedReader(new RemoveHTMLReader(new FileReader(args[0])));
+// args[0]은 command line arguments로 받은 것
+// new RemoveHTMLReader의 read()에서 char 단위로 return한걸 BufferedReader가 String으로 변환
+
+
+File: sequence of character
+- 1개씩 read()하다가 다시 뒤로 돌아갈수 없음
+
+RandomAccessFile : 왔다갔다 할 수 있음
+seek() : 왔다갔다해주는 함수
+* seek() 파일 포인터
+
+
+
+ 

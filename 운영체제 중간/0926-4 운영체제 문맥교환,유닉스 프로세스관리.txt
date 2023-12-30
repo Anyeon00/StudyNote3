@@ -1,0 +1,63 @@
+0926-4 운영체제 문맥교환, 유닉스(리눅스) 프로세스 관리
+
+인터럽트 처리 및 문맥교환
+인터럽트: unexpected event(cpu 입장에서)
+-> running process 중 unexpected event가 나타나면(인터럽트가 오면) 
+ 우선순위를 판단해 무시하거나 받아서 먼저 실행하거나
+=> 우선순위 판단중 문맥교환이 일어남
+
+* 인터럽트가오면 cpu가 즉각적으로 반응하는 것이 아니라
+ 한 clock이 끝나고 인터럽트가 왔는지 확인하여 반응
+
+
+*program counter: 다음 명령어의 주소를 기억하는 것
+
+문맥교환: 인터럽트가 왔을때 suspended되어야함(메모리 반납상태_0919참고)
+=> 작업하던 프로그램에서 사용하던 데이터를 저장해놓았다가 다시 시작할때 가져오는 과정
+- 문맥:  특정 프로세스와 관련된 정보
+- 프로세스 중단시 문맥이 보존되었다가 원상복구됨
+- context saving : 문맥 저장
+- context restoring : 문맥 복구
+- contexting swithing :  현재 작업하는 프로세스를 바꾸기 위해 saving&restore하는것
+
+*문맥교환시 중요한 문맥
+: 시스템 수준 문맥 - cpu내의 각종 범용 특수 레지스터의 내용(Program counter resister, Stack Pointer등)
+
+*프로세스 교환시 scheduling만 하는게 아니라 문맥교환도 일어남
+
+
+* 앞 장 내용의 시분할 시스템에서 프로세스 교체할때마다 문맥교환이 일어남(시분할 단점)
+* 앞 장 내용중 pcb내의 정보에서 문맥 저장 영역이 있었음
+
+
+
+
+
+
+UNIX PROCESS MANAGEMENT
+
+fork system call(fork 함수): 유닉스에서 system call
+- 프로세스 수를 증가 시킬수 있는 유일한 방법
+- fork은 자기자식한테 모든걸 상속해줌(copy를 만듦, pcb도 복사)(process id만 다름)
+- 부모가 하던 작업상태도 copy됨
+- fork가 종료되면 부모 프로세스에게는 자식 id가 return
+ 자식에게는 0이 return
+
+exec system call
+- 일단 fork()로 프로세스 만들고 fork는 항상 부모와 같은 프로그램이므로 다른것으로 교체하는 system call
+- exec()실행시 fork()로 인한 직전까지의 작업내용은 사라지고 다른 프로그램이 실행됨
+
+
+Q 53. UNIX의 시스템 콜(call) 중에서 새로운 프로세스를 생성시키는데 사용하는 것은?
+1. exec	2. fork	3. creat	4. dup
+
+A. 2. fork
+
+
+질문
+퀴즈 문제9번
+
+
+
+
+

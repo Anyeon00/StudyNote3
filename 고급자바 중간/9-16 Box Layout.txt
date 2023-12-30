@@ -1,0 +1,76 @@
+9-16 
+
+Box layout
+
+- 차곡차곡 쌓는거
+- 다른 Layout과 세팅방법이 다름(Box자체를 Panel처럼 사용함)
+
+ex) Constructor에서
+Box b = Box.createHorizontalBox();	
+// createHorizontalBox() : 수평으로 나열, createVerticalBox() : 수직으로 나열
+
+b.add(new JLabel("Name");	// JLabel을 Box에 추가
+b.add(new JTextField("Kim");	 // JTextField를 Box에 추가
+
+Container contentPane = getContentPane();
+contentPane.add(box);	// Box를 Panel처럼 추가
+
+
+
+Glue, Strut
+Box를 구성하는 객체 사이에 간격 넣기
+
+Glue: 늘어나고 줄어드는 간격  
+Strut: 크기가 고정적으로 정해진 간격
+
+*내용물 사이에 코드를 추가하면 그 내용물 사이에 glue나 strut가 추가됨
+ex) 
+Box b = Box.createHorizontalBox();
+
+b.add(new JLabel("Apple");
+
+b.add(Box.createHorizontalStrut(10));	// argument : 간격크기
+// JLabel Apple과 JLable Banana 사이에 Strut가 추가됨
+// 수직Box일시 Box.createVerticalStrut() 사용
+
+b.add(new JLable("Banana");
+
+b.add(Box.createGlue());
+// JLabel Banana와 JLabel Orange사이에 Glue가 추가됨
+
+b.add(new JLabel("Orange"));	
+
+
+
+
+* TextField는 자동으로 glue됨 -> TextField가 있어도 glue가 작동되게하려면 MyTextFeild로 크기가 고정된 TF를 만들거나 크기가고정된 Panel을 만들어서 사용하거나
+
+
+주 사용용도: 툴바,하단 상태label등을 만들때 사용
+
+아래예제: 다른 방식으로 구성된 Box 4개를 각각 만들고 button에 따라 바꿈
+actionPerformed에서 button에 따라 currentBox를 4개중에서 바꿔줌
+바꾸고나서 validate()실행해주고 repaint()해야 layout변경이 확실히 적용됨
+----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

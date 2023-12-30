@@ -1,0 +1,198 @@
+12-3 고급자바 net3
+
+고급자바-Serve.java 프로그램 예제 -> 너무 어려울까봐 캡스톤에 tcp/ip영상에 만듦
+
+다섯가지 서비스(port)제공
+- Control : 클라이언트로 접속하는데 서버를 관리할 수 있는 서비스
+* 명령어들로 control할수 있음 : help, add, remove, quit...
+- Time : 접속시 시간을 알려주고 끝 _문답식
+- HTTPMirror : 이 포트는 웹브라우저를 이용해 access해야 함
+- Reverse : 보낸 문자열을 거꾸로 만들어서 돌려줌 
+- UniqueID : 접속할 때 마다 static int값을 ++시킴
+
+* 이 이상의 서비스가 필요할시 또 추가할 수 있는 구조를 가짐
+
+* 서버 프로그램에서 자기 ip얻는 법
+InetAddress address = InetAddress.getLocalHost();
+String myIP = address.getHostAddress();
+
+* 서버 프로그램에서 client ip얻는 법
+ServerSocket ss = new ServerSocket(4000);  // 7000번에 포트생성
+Socket client = ss.accept();  // 포트에 클라이언트 접속시 연결, client 소켓 생성
+String ip = client.getInetAddress().getHostAddress();
+
+-----------------------------------------------------------
+프로그램 설명 
+
+* 서버에 서비스가 등록될때마다 서버에 port스레드가 만들어지고, 
+서비스에 클라이언트가 연결될때마다 port스레드에서 client스레드가 만들어짐
+* port스레드들은 Listener 클래스 _서버소켓을 만들어서 client접속을 대기, 
+client스레드들은 Connection 클래스 _i/o stream을 이용해 client대응
+
+* collection객체인 hash map에 listener(port 스레드)들을 관리 _port number가 Key고 해당 서비스가 value, 
+set에 connection(client 대응 스레드)들을 관리
+* Listener클래스(accept()대기)가 thread로 구현됨, ServerSocket도 Listener가 생성함
+
+* Listener클래스(extends Thread)의 서비스(port)들은 Service라는 인터페이스를 구현함
+모든 listener(port)들은 serve()를 수행하는데 
+InputStream으로 data를 받아서, OutputStream으로 출력하는 방식으로 서비스함
+* serve(InputStream, OutputStream)
+* 즉 Service 클래스는 위에 포트 스레드 - 클라이언트 스레드 다만들어지고 클라이언트스레드의 run()에서 Stream들을 argument로 받으면서 호출됨
+
+* Listener의 run함수가 connection의 run()함수롤 실행하도록 이어짐
+
+*서비스클래스는 질문을 받아서 답을 돌려주는 것(inputStream구멍으로 받아서, ouputStream으로 돌려주면 끝)
+-------------------------------------------------------------------
+코드 _port(서비스)들 구현 부분
+Service 인터페이스 ex)
+public interface Service{
+  public void serve(InputStream in, OutputStream out) throws IOException{}
+}
+
+Time 클래스 ex)
+public class Time implements Service{
+  public void serve(InputStream i, OutputStream o) throws IOException{
+    PrintWriter out = new PrintWriter(o); // 연결이 되자마자 outputStream에다가 
+    out.print(new Date() + "\r\n");  // 오늘 시간을 구해서 출력하면 끝
+    out.close();
+    i.close();
+  }
+}
+
+Reverse 클래스 ex)
+public class Reverse implements Service{
+  public void serve(InputStream i, OutputStream o) throws IOException{
+    BufferedReader in = new BufferedReader(new InputStreamReader(i));
+    PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(o)));
+    
+    out.print("Enter lines. End with a '.' on a line by itself\n");
+
+    for(;;){
+      String line = in.readLine();  // socket에 있는(argument로 받은) stream으로 부터 readLine
+      if((line == null || line.equals(".")) break;  // "."을 만나면 break
+      ~ // 대충 문자열 거꾸로 client로 전송하는 코드
+    }
+    out.close();
+    in.close();
+  }
+}
+
+HTTPMirror 클래스 ex)
+public class HTTPMirror implements Service{
+  public void serve(InputStream i, OutputStream o) throws IOException{
+    BufferedReader in = new BufferedReader(new InputStreamReader(i));
+    PrintWriter out = new PrintWriter(o);
+    // out.print() <- http의 헤더내용를 보내줘야함 그래야 응답함
+    String line;
+    while((line = in.readLine()) != null){	// inputStream으로 들어온 내용을
+      if(line.length() == 0) break;
+      out.print(line + "\r\n");		// 바로 outputStream에다 출력해주면 끝
+    }
+    out.close();
+    in.close();
+  }
+}
+
+UniqueID 클래스 ex)
+위와 흡사하므로 생략 단, 위는 대화형이고 이거는 응답형이므로 inputStream필요X
+
+Control 클래스 ex)
+public class Contorl implements Service{
+  Server server;	
+  String password;
+  boolean connected = false;
+
+  public Control(Server server, String password){
+    this.server = server;
+    this.password = password;
+  }
+  
+  public void serve(Input~~, Output~~){
+    // 대충 stream 만드는 코드
+    
+    String line;
+    for(;;){	// quit를 칠때까지 무한 반복, line에 Client로부터 받은 명령어에 따라 다른 일을 실행
+      line = in.readLine();  // data읽고
+      if(line == null) break;
+      try{
+        // line을 tokenizer해서 toLowerCase()해서 String command에 저장
+        // if (command.equals("help"))면 ~, else if(command == add)면 ~,
+        // if (command == 무슨 명령어)면 ~, 마지막으로 command	 == quit면 break
+      }
+    }
+  }
+}
+-----------------------------------------------------------
+코드 _메인프로그램 구현부분 [고급자바 12-3 net3 36:00]
+psvm{
+  Map services;
+  Set connections;
+
+  Server s = new Server(~~); // 밑에 Server클래스 구현해놓음
+
+  // "-control" 이 옵션으로 오는경우 서비스 추가
+  // s.addService(service, port); // 위 s에 등록 _어떤 service를 어떤 port에 등록해라, addService()할때마다 listener들이(포트) 생성되어 작동
+  // 이 addService함수에서는 hashMap에다 서비스를 put, Listener라는 thread를 만들고 start()
+  // ㄴex) Reverse서비스를 4000번포트로해서 addService하면 이를 처리하기위한 listener thread를 만들어서 map에 집어넣고 start()
+}
+
+Listener 클래스 _포트Thread들을 구현한 클래스 ex)
+public class Listener extneds Thread{
+  ServerSocket listen_socket;  
+  int port;  
+  Service service;
+
+  public Listener(ThreadGroup group, int port, Service service) throws IOException{
+    super(group, "Listener:" + group);
+    listener_socket = new ServerSocket(port);  // 서버소켓하나 만듦
+    this.port = port;  // 포트넘버 명시
+    this.service = service;
+  }
+  
+  public void run(){  // 포트 Thread를 run
+    while(!stop){
+      try{
+        Socket client = listen_socket.accept();	// 여기서 client가 접속할때까지 block됨
+        addConnection(client, service);  // client 소켓과 client대응thread를 만듦 
+      } catch(~Exception)....
+    }
+  }
+  
+  protected synchronized void addConnection(Socket s, Service service){ // client의 연결이 생기면 
+    Connection c = new Connection(s, service);  // 클라이언트thread를 구현한 객체
+    // Client쪽과 필요한 Stream 열어주는 코드
+    
+    connections.add(c);	// collection객체 set에 connection 추가
+    c.start();
+  }
+}
+
+Connection 클래스 _클라이언트Thread들을 구현한 클래스 ex)
+public class Connection extends Thread{
+  Socket client;
+  Service service;
+
+  public Connection(Socket client, Service service){  // client소켓정보와 서비스를 받아옴
+    ~
+  }
+
+  public void run(){
+    try{
+      InputStream in = client.getInputStream();
+      OutputStream out = client.getOutputStream();
+      Service.serve(in, out);	// Stream들을 argument로 넘겨주면서 Timer, HTTP등의 서비스들의 serve()를 실행
+    } catch (~~Exception e){~}
+  }
+}
+    
+
+ 
+
+
+
+
+
+
+
+
+

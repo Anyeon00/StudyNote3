@@ -1,0 +1,26 @@
+고급자바 중간
+16일(월)
+
+~8주차(dialogue까지)
+
+- 코드에서 빈칸채우는 문제
+- 잘안쓰는건 안나옴, 많이쓰는 것 위주로 나옴
+
+출제문제 List:
+7장
+ClosableTest
+NotHelloWorld2(Stringwith,fontmetrics나오는거)
+
+8장
+sketch keyevent
+mouseTest mouseEvent
+separateGUI	colorAction
+
+9장
+LongListTest 000~999찍혀나오는거
+DialogTest
+
+
+----------------------------------
+
+

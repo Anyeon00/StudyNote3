@@ -1,0 +1,75 @@
+10-3 고급자바 Input/Output
+
+
+
+1. ???InputStream , ???OutputStream : byte 단위 입출력 _주로 멀티미디어(오디오,영상) < 이걸 더 많이씀(문서도)
+2. ???Reader , ???Writer : char(유니코드) 문자단위 입출력 _주로 문서
+-> read(), write()함수
+: 1의 경우 byte이므로 byte[ ]필요, byte단위로 read함 write도 마찬가지,
+ 2의 경우도 마찬가지
+
+
+* 1번예시 FileInputStream/FileOutputStream
+// 파일이 txt일지 audio일지 video일지 모를 때
+// 아래 File 복사하는 예시(어떤 file일지 모름)
+ex)
+File from_file = new File("abc");;
+File to_file = new File("def"); 	// 파일객체
+FileInputStream from = new FileInputStream(from_file);  // 파일(txt_메모장) 읽는 객체
+FileOutputStream to = new FileOutputStream(from_file);  // 출력 객체
+byte[ ] buffer = new byte[4096];
+int bytes_read;
+while((bytes_read = from.read(buffer)) != -1){ // buffer에 있는걸 읽은 부분을 buffer에 저장하고 bytes_read에 어디까지 읽엇는지 저장 <- 다시보니 뭔소린지 모르겠는데 아마 inputStream(from.read)으로부터 읽은걸 byte[ ](buffer)에다가 저장하는듯
+  to.write(buffer, 0, bytes_read);	// 방금읽은 byte만큼 write (bytes_read에 저장되어있음 얼마나읽엇는지)
+}	// File 복사됨
+from.close();
+to.close();		
+
+
+* File 객체 function
+boolean .exits(){} 
+boolean isFile(){} 
+boolean canRead(){} 
+boolean canWrite(){} 
+boolean delete(){}
+boolean list(){}	// 폴더일시 file list
+
+
+* 2번 예시 FileReader
+// 눈으로 볼 수 있는 문서file인 경우는 character 단위의 I/O를 해야함
+// 아래 File을 받아 textarea에 출력하는 예시(문서 file만 받음)
+ex)
+File f = new File("hello");
+FileReader in = new FileReader(f);
+char[ ] buffer = new char[4096];
+int len;
+while((len = in.read(buffer)) != -1){	// char단위로 읽는데 몇 char읽었는지 int로 return됨
+  String s = new String(buffer, 0, len);
+  textarea.append(s);
+}
+
+*실제 코드에서 I/O Exception Handling 해줘야함
+
+* FileDialog 객체
+: Button으로 눌러서 File 오픈 시킬때
+- 세부사항은 찾아보기
+ex) function
+show
+setDirectory
+getDirectory
+setFile
+getFile
+
+
+* FilenameFilter 인터페이스
+- File 객체의 list()함수 사용시 argument에 FilenameFilter객체를 넣어주면 필터링되어 출력됨
+( .java 파일만 출력하고 싶을때 등)	
+- accept(File dir, String name) 구현해야함 // 어느 폴더에 name에 해당하는 확장자만 걸러내라 
+
+
+
+
+
+
+
+

@@ -1,0 +1,125 @@
+MouseListener 
+마우스를 조작할때 호출되는 이벤트핸들러
+
+MouseMotionListener
+마우스를 움직일때 호출되는 이벤트핸들러
+
+rubberbanding 코드 부분: 배경색으로 두번그리기_처음그리는부분은 지우는행위(xor색으로그리니까), 두번째는 그리는행위
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class MousePanel extends JPanel implements MouseMotionListener{
+    MousePanel(){
+        addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+                current = find(x, y);
+                if (current < 0) {
+                    add(x, y);
+                }
+            }
+
+            public void mouseClicked(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
+                if (e.getClickCount() >= 2) {   // 더블클릭
+                    remove(current);    //삭제
+                }
+            }
+        });
+        addMouseMotionListener(this);   //MouseListener가 아닌 MouseMotionListener는 직접 panel class에 구현
+    }
+    @Override
+    public void mouseMoved(MouseEvent e) {  //사각형안에 커서가 들어가면
+        int x = e.getX();
+        int y = e.getY();
+
+        if (find(x, y) >= 0) {  // 커서 모양 바꾸기
+            setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        } else{
+            setCursor(Cursor.getDefaultCursor());   // default커서
+        }
+    }
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+
+        Graphics g = getGraphics();
+        g.setXORMode(getBackground());  // parameter는 배경색으로 지정
+        draw(g, current);
+        squares[current].x = x;
+        squares[current].y = y;
+        draw(g, current);
+        g.dispose();
+    }
+
+
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (int i = 0; i < nsquares; i++) {
+            draw(g, i);
+        }
+    }
+
+    public int find(int x, int y) {
+        for (int i = 0; i < nsquares; i++) { // x,y가 container를 돌면서 index번째의 사각형좌표 안에 있으면
+            if (squares[i].x - SQUARELENGTH / 2 <= x && x <= squares[i].x + SQUARELENGTH / 2 && squares[i].y - SQUARELENGTH / 2 <= y && squares[i].y + SQUARELENGTH/2 >= squares[i].y) {
+                return i;   //해당 index return
+            }
+        }
+        return -1;
+    }
+
+    public void draw(Graphics g, int i) {
+        g.drawRect(squares[i].x - SQUARELENGTH / 2, squares[i].y - SQUARELENGTH / 2, SQUARELENGTH, SQUARELENGTH);
+        nsquares++;
+        repaint();
+    }
+
+    public void add(int x, int y) {
+        if (nsquares < MAXNSQUARES) {
+            squares[nsquares] = new Point(x, y);
+            current = nsquares;
+            nsquares++;
+            repaint();
+        }
+    }
+
+    public void remove(int n) { // current를 n에 전달받아 삭제
+        if (n < 0 || n >= nsquares) return;
+        nsquares--;
+        squares[n] = squares[nsquares]; //자료구조에서 빈 n의 자리에 젤 끝에 있는 n객체를 끌어다 집어 넣어 채움
+        if(current == n) current = -1;
+        repaint();
+    }
+    private static final int MAXNSQUARES = 100;
+    private static final int SQUARELENGTH = 10;
+    private int nsquares = 0;
+    private int current = -1;
+    private Point[] squares = new Point[MAXNSQUARES];
+
+
+}
+class MouseFrame extends JFrame{
+    MouseFrame(){
+        setTitle("MouseTest");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        contentPane.add(new MousePanel());
+    }
+}
+public class MouseTest {
+    public static void main(String[] args) {
+        JFrame frame = new MouseFrame();
+        frame.setVisible(true);
+    }
+}

@@ -1,0 +1,80 @@
+
+graphics객체: 화면에 그림을 그리기 위한 모든 데이터와 모든 함수를 모아놓은 객체
+
+JLabel : button이나 textField 등과 같이 사용
+
+도스창과 달리 윈도우에서는 \n만 쓰지않고 \n\r 로 씀
+
+자바 여러가지 환경변수들:
+Toolkit 클래스의 function으로 얻어올 수 있음
+-> Toolkit tk = Toolkit.getDefaultToolkit();
+
+폭이랑 높이를 합쳐놓은 것 Dimension
+-> Dimension d = tk.getScreenSize();
+int screenHeight = d.height;
+int screenWidth = d.width;
+
+윈도우ui종류
+String plaf = "javax.swing.plaf.metal.MetalLookAndFeel";	//기본
+// = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";	//motif
+// = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";	//windows
+try{	//적용
+	UIManager.setLookAndFeel(plaf);
+	SwingUtilities.updateComponentTreeUI(this);
+}
+catch(Exception e){}
+
+
+Layout Manager : Flowlayout (Default값)(왼쪽상단부터 차곡차곡 배치됨, 한라인에선 centering)
+ex) constructer에서
+setLayout(new Flowlayout()); // new GridLayout(3,1)_3행1열
+* BorderLayout() : 동서남북으로배치
+ex) "
+JPanel p = new JPanel();
+Container contentPane = getContentPane();
+contentPane.add(p, "South");	 //"Center"입력시 메인위치
+
+BoxLayout은 다른방식, 9-16참고
+
+nullLayout 좌표값으로 지정
+: setLayout(null);
+JButton b = new JButton("A");
+b.setBounds(100,100,200,200);  // 위치좌표 지정
+
+
+paintComponent()함수 호출하는 함수
+: repaint();
+
+
+g.setXORMode(getBackground())	//rubberbanding
+배경색으로 두번그리기_처음그리는부분은 지우는행위(xor색으로그리니까), 두번째는 그리는행위
+8-4 MouseListener참고
+포그라운드색과 포그라운드색이 만나면 ()안의 색으로 지정됨
+
+*버튼(P) 네모닉, 버튼 ctrl+p = 엑세러레이터	
+
+
+JTextField나 Button도 Panel처럼 이용가능
+ex) setLayout(new BorderLayout()); 에서 textfield나 button도 "North"에 배치가능
+
+
+Image는 rgb값이 담긴 2차원integer array
+
+
+paintComponent호출함수 repaint()가 제대로 작동안될시
+(뭔가 오류가 생길때)
+paint(getGrahpics())로 대체해서 사용
+// repaint()가 paint()를 호출하는데 시간적인 지연을 두는 정책이 있음
+// 출처 : m.blog.naver.com/richtokki/50001325864
+
+
+
+
+
+
+
+
+
+
+
+

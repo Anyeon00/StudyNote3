@@ -1,0 +1,62 @@
+0926-1 운영체제 퀴즈 : 프로세스 상태전이
+
+
+[4주차 보강영상 00:00 프로세스 상태전이도 외워서 그리기]
+-> ready상태에 있다가 schedule(0919참고)이 되면 running상태로,
+ running상태에서 시간이 다되어 timerrunout(or preemption_0919참고)되면 ready상태로,
+ ruuning상태에서 event를 기다려야 하는경우 blocked로,
+ blocked에서 event가 발생하면 wakeup되어서 ready로 _이런식으로 설명하기
+ 이 running ready blocked 세가지 관계를 먼저그리기
+
+ 기억장치의 양이 많아져 느려졌을때 각각 ready와 blocked상태에서 
+ suspended ready와 suspended blocked 상태로,
+ suspended상태에서 여유가 생기면 resume되어 돌아감
+
+ 마지막으로 created상태 젤앞에, terminated 젤 뒤에
+ created에서 시작해 ready상태로, 시작부터 기억장치 여유가 없으면 suspended ready로
+ running중에 exit하여 terminated됨
+
+[[퀴즈]]
+[5:10]
+1번(사례 구체적으로) 
+A. 
+a - 할당된 시간이 끝났을때(time runnout), 우선순위가 더 높은 애가 와서 cpu뺏길때(preemption)
+b - 입출력을 만났는데 아직 data가 준비되지 않았을때, buffer가 필요한데 빈 buffer가 없을때, 공유데이터에 접근하려는데 lock이 걸려있을때, 다른 프로세스에서 signal을 받아야 실행할 수 있을때
+c - 메모리가 부족할때라고 쓰면 안됨 더 구체적으로, 프로그램실행결과가 이상해서 확인하기 위해 ctrl+z로 중단한 경우(ctrl+c는 종료),  프로세스가 많이 생성됐는데 실행중인 프로세스의 우선순위가 낮을때
+d - 하고있는 작업을 완료했을때, 다른 프로세스가 kill 시그널을 보냈을때, ctrl+c
+
+3
+A.
+wakeup - 어떤 프로세스에서 시그널을 기다리고 있는데 시그널이 도착했을 때
+preemption - 나보다 우선순위가 높은 프로세스가 도착해서 cpu를 양도해야할 때
+suspend - 
+
+[10:50]
+=> 이런 각 상황이 발생하는 "사례"
+
+[11:00]
+3-1. A. 24번이 실행될때 각 A, B, C의 상태
+프로세스 A - ready
+프로세스 B - blocked (I/O 대기표시)
+프로세스 C - running
+
+3-2. A를 하다가 B를 실행하려면 뭔가 준비해야 하는데
+문맥교환, scheduling(0917참고)하는것 
+
+3-3. scheduling은 ready인 프로세스 대상으로 함, 
+따라서 blocked되어있는 B는 scheduling대상이 아님
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

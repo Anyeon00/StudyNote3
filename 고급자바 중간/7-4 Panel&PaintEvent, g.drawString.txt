@@ -1,0 +1,28 @@
+panel을 붙이는데
+그냥붙이면 frame자체에 붙임
+
+작업공간(content pane) 에 붙여야함
+*작업공간은 frame의 부속객체로 존재
+ex)
+Container container = this.getContentPane();	//Content Pane생성
+container.setBackground(Color.red);
+JPanel p = new JPanel();	//Panel생성(실제로는 JPanel 상속받아 만든 객체사용)
+container.add(p);	//Content pane container에 Panel p붙이기
+
+
+Panel 클래스
+- extends JPanel
+- PaintEvent핸들러 (화면이 나타나거나 갱신될때마다 호출되는 핸들러)
+, 너무 많이쓰이는 핸들러라 인터페이스로 존재하지 않고 상위클래스에 존재함 판넬클래스에서 오버로딩해서 사용
+ex)
+class PanelTest extends JPanel{
+	public void paintComponent(Grahpics g){
+		super.paintComponent(g);	//이 핸들러 사용시 반드시 써줘야함
+		g.drawString("Not a Hello, World program", x좌표, y좌표); drawString함수
+	}
+}
+
+
+*Graphics객체: 화면에 그림을 그리기 위한 모든 데이터와 모든 함수를 모아놓은 객체
+*Graphics2D : awt가 옛날 swing이 현재처럼 Graphics는 옛날 Graphics2D는 현재
+그런데 현재는 2D인데 Graphics로 표시함, 2D의 함수 쓰려면 2d로 downcasting해서 사용

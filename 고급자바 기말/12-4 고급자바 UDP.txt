@@ -1,0 +1,24 @@
+12-4 고급자바 UDP
+
+UDP _Unreliable Datagram Protocol
+connectionless protocol
+꼭 도착한다는 보장이 없음
+
+
+5-11 UDPSend.java		// 엽서를 만들어서 보냄
+5-12 UDPReceive.java	// 엽서 도착을 대기하다 읽음
+
+--------------------------------------------
+UDPSend.java 요약
+DatagramPacket packet;
+DatagramSocket dsocket;
+
+socket에다 packet을 넣어서 보내면 끝
+
+
+UDPReceive.java 요약
+byte[ ] buffer = new byte[2048];
+DatagramSocket dsocket;
+DatagramPacket packet;
+
+dsocket.receive(packet); //함수로, packet의 contructor argument인 buffer에 받음

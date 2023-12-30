@@ -1,0 +1,66 @@
+11-3 고급자바 Thread2
+
+Timer클래스 
+- thread를 이용하는 프로그램
+- library에 존재
+- TimeThread객체가 이 클래스안에서 Thread로 생성되어남아서 TimerTasks를 관리함(실질적 timer역할)
+- member function
+public void schedule(TimerTask task, long delay){} // argument: 할일task, delay시간 이후에 실행(1/1000초단위)
+public void schedule(TimerTask task, long delay, long period){} // period까지 쓰면 period마다 반복
+
+
+TimerTask클래스
+- Timer를 이용해서 무언가 하는 객체
+- thread를 상속받아 구현되어 있음(즉 thread임)
+- 마찬가지로 library에 존재
+- member function
+public void cancle(){}	// thread작동 취소
+- 이 클래스를 상속받는 클래스 구현
+ex) class MyTimerTask extends TimerTask
+{
+  MyTimerTast(){
+    super();
+  }
+  // thread이므로 run()함수 구현
+  public void run(){}
+  
+  // 시간이 끝나고 해야할 task를 abstarct function overriding으로 구현
+
+}
+
+
+사용 예
+ex) main program
+psvm{
+  Timer timer = new Timer();	 // Timer객체 생성
+  TimerTask t1 = new MyTimerTask();	// (?)초에 알람설정
+  TimerTask t2 = new TimerTask(){ // anonymous object로 구현
+    public void run(){
+      sout("Boom");
+    }
+  timer.schedule(t1, 0, 500); // Timer에 TimerTask등록 _0초후에 t1객체의 run을 0.5초마다 반복실행
+  
+  t1.cancle();	// t1 작동 취소
+  timer.cancle();	// timer 작동 취소 
+  }
+}
+
+* 프로그램은 어려우니까 이해 X, 중요한 syntax
+volatile : 예약어, 멀티스레드에서 공유되는 데이터멤버에 상호배제를 위해 적어줌
+컴파일시에 optimization하지말라는 의사표현을 위한 reserved word(예약어)
+ex) volatile boolean stopped = false;
+
+
+SortedSet : 정렬Set
+Comparator : SortedSet에서 사용하는 인터페이스 (어떻게 sorting할건지)
+- public int compare(Object a, Object b){}	// 이 내용대로 sorting
+
+
+
+
+
+
+
+
+
+

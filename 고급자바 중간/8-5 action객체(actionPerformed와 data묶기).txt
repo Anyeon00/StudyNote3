@@ -1,0 +1,116 @@
+8-5 Menu
+
+ex) Frame Constructer에서
+
+JMenuBar instanciation 후
+setJMenuBar(bar);	// JMenuBar 등록
+
+JMenu instanciation후
+menu.add(button1);
+menu.add(button2); // JMenu에 버튼추가(따로 instanciation해야됨 여기선 생략)
+//actionListener를 JButton상속받은 객체의 클래스에서 button에 등록해놓으면 여기서 등록안해도됨
+
+bar.add(menu);	// JMenuBar에 JMenu등록
+
+수업내용
+*Action: 메뉴, 버튼. 기타등등에서 모두 같은 기능을 하는 actionPerformed를 작성할때(같은기능을하는)
+-> 데이터: 버튼의 이름, 네모닉, 이미지 
+    함수: actionPerformed()
+위 데이터와 함수를 한 클래스에 모아놓음
+-> AbstractAction인터페이스 extends (actionListener를 상속받음)
+-> getValue(String key), putValue(~) 함수도 상속받아 이용
+-> constructer의 argument는 필요한 data들 직접 정해서
+-> constructer 안에서 putValue함수를 이용해 data들을 저장
+ex) putValue(Action.NAME, name);	// argument로받은 name 저장
+putValue("Color", c);	//지정되지 않은 data를 사용하는 경우
+-> argument로 받은 data는 hash자료구조에 저장됨, getValue와 putValue로 넣고 빼서 사용
+
+
+=>요약: 1. 버튼에 사용되는 data(이름,icon,color..등등)과 function(actionPerformed())를 모아놓은 객체 Action _AbastractAction을 상속받은 Class로 구현
+2. JButton을 상속받은 ActionButton 구현(위 Class에서 저장한 data들을 사용)
+ex) Icon icon = (Icon) a.getValue(Action.SMALL_ICON);	//hash에서 꺼낸 value는 object type이므로 typ casting, construct argument로 받은 Action객체 a
+setIcon(icon);
+3. button을 사용할 판넬에서 Action객체로 1번 class객체 instanciation후 사용할 곳에 add
+ex) Action blueAction = new 1번객체("Blue", Color.blue, panel);
+panel.add(new ActionButton(blueAction));	// panel에 버튼 추가
+* JMenu m = new JMenu("Color");
+m.add(blueAction);	//원래 actionListener를 anonymouse object로 add함  // 이건 JMenu에 추가하는 경우(button필요x)
+
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class ColorAction extends AbstractAction{   //button이 사용하는 data와 function을 모아놓은 action객체
+    private Component target;
+    ColorAction(String name, Icon icon, Color c, Component comp){
+        putValue(Action.NAME, name);    //argument에서 받은 data를 hash에 put
+        putValue(Action.SMALL_ICON, icon);
+        putValue("Color", c);   // 직접만든 형식의 데이터
+        target = comp;
+    }
+
+    public void actionPerformed(ActionEvent e) {    // button이 사용하는 function부분
+        Color c = (Color) getValue("Color");
+        //color를 지정하는 일은 여기서 하므로 여기서 getValue, 다른 data들은 button을 만들때 사용하므로 button클래스에서 getValue함
+        target.setBackground(c);
+        target.repaint();
+    }
+}class ActionButton extends JButton{
+    ActionButton(Action a){ //위에서 만든 action객체를 argument로 받아 버튼을 instanciation
+        setText((String)a.getValue(Action.NAME));
+        //button 이름 지정하는 함수, hash의 data는 object type으로 저장되어있으므로 typecasting
+        Icon icon = (Icon) a.getValue(Action.SMALL_ICON);
+        if (icon != null) {
+            setIcon(icon);
+        }
+        addActionListener(a);   //버튼에 listener 등록
+
+    }
+}
+
+class SeperateGUIFrame extends JFrame{
+    SeperateGUIFrame(){
+        setTitle("SeperateGUIFrame");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        JPanel panel = new JPanel();
+        Action blueAction = new ColorAction("Blue", new ImageIcon("blue-ball.gif"), Color.blue, panel);
+
+        Container contentPane = getContentPane();
+        contentPane.add(panel);
+
+        JMenuBar mbar = new JMenuBar(); // MenuBar에서 blue액션을 사용하는경우
+        JMenu m = new JMenu("Color");
+        m.add(blueAction);  // 메뉴바의 메뉴에 blueAction 추가
+        mbar.add(m);
+        setJMenuBar(mbar);
+
+        panel.add(new ActionButton(blueAction));    // Button에서 blue액션을 사용하는경우
+        // actionListener를 구현한 blueAction을 버튼의 parameter에,
+        // ActionButton을 panel에 추가
+    }
+}
+public class MulticastTest {
+    public static void main(String[] args) {
+        JFrame frame = new SeperateGUIFrame();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

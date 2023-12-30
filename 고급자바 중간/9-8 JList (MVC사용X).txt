@@ -1,0 +1,26 @@
+9-8 JList (MVC사용 X)
+
+* 사용법: Collection객체에 문자열을 여러개 담음, Collection객체를 JList의 Construct의 Argument에
+ex)
+String[] words = {"A", "B", "C"};
+JList wordList = new JList(words);
+// JScrollPane scrollPane = new JScrollPane(wordList);  // JList를 scrollPane에 넣기
+
+* List에서 item 선택하는 이벤트핸들러	// Listener에 함수 1개 존재
+ListSelectionListener -> public void valueChanged(ListSelectionEvent e){}
+ex)
+public void valueChanged(ListSectionEvent e){
+  JList source = (JList)e.getSource();
+  String[] values = (String)source.getSelectionValues(); // 선택된 여러개의 item이 values에 들어감
+  for (int i = 0; i < values.length; i++){	// values에 들어간 item들에 대해 일처리
+	values[i]... ;
+  }	
+
+
+
+아래 프로그램 - JList가 scrollPane에 삽입된 상태, List에서 다중선택가능
+화면구성 - Frame, JList가 들어가는 scrollPane이 들어가는 Panel이 South에, 메인판넬은 Center에
+
+* MVC를 사용하지 않고있음, 자료구조(Model)인 String[] words를 따로 분리하지 않음 
+
+*코드 작성 생략(MVC적용된 프로그램이 아니므로)

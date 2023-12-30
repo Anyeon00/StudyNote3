@@ -1,0 +1,4 @@
+event가 발생했을때 event정보가담긴 객체가 event queue를 통해서 dispatcher가 event객체를 eventHandler에 나눠주는데 그 event queue 구조의 예제
+
+버튼이 호출됐을때붙 시퀀셜 프로그램
+getClick()호출됐을때 eventqueue에 접근, event객체를 직접 가져와서 처리

@@ -1,0 +1,10 @@
+9-2 Dialog2
+
+data를 주고 받는 dialog 예제
+
+-> 
+1. 전달해야하는 data를 가지고 있는 객체 Class를 만듦(이런 방법도 있음)
+- data memeber로 String userName, password가 있고, Constructor argument로 받아와 저장
+
+2. dialog에서 버튼 클릭시 입력된 data를 getSource()해서 
+

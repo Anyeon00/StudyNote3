@@ -1,0 +1,91 @@
+1022 운영체제 동기화4	8주차 
+
+
+전에 내용: 세마퍼를 이용한 생산자 소비자문제
+
+Reader-writer 문제
+- reader : 조회, writer : 수정 
+- 1. writer 간에 상호배제
+- 2. reader 간에 상호배제는 필요X(읽는건 동시에 읽어도 상관없으므로)
+- 3. reader와 writer간 상호배제
+- 4. 현재 reader수를 나타내는 또 다른 공유변수 nreaders에 대해서 reader간에 상호배제
+* 무기한 연기 문제
+
+ex)
+Reader	
+while(1){
+  P(rmutex);
+  if(nreaders == 0) P(wmutex);	// nreaders가 한명도 없었으면 이제 reader가 생겻으니 writer 배제시키거나 내가 block
+  nreaders= nreaders + 1;
+  V(rmutex);
+  Perform read operations;
+  P(rmutex);
+  nreaders = nreaders - 1;
+  if(nreaders == 0) V(wmutex);	// nreaders감소시켰는데 nreaders가 0이면 writer풀어주기
+  V(rmutex);
+}	// rmutex는 다 nreaders변수에서 상호배제
+
+
+[8주차 동기화4 7:00 문제]
+[9:10 문제]
+-1) 중간에 인터럽트를 받지않게 분리불가능한 연산으로 구현했기 때문
+-2) busy waiting시키지 않고 block시키는것
+[10:50 문제]
+-1) 상대가 실행중이므로 while문 true, turn도 B, 내(A) flag false만들고 turn이 B인동안 busy waiting하는데 할당된 시간이 20이므로 20만큼만 busy waiting / 문맥교환되어 상대프로세스 B가 임계구역을 빠져나가면서 turn A로 만들고 flagB를 false로 만들고 실행하다가 time quantum끝나면 다시 프로세스 A로 문맥교환 / turn이 B가 아니므로 빠져나와서 flagA true로 만들고 올라가서 while문의 flagB가 false니까 임계구역 실행
+-2) lock이 true이므로 busy wating하는데 20만큼 busy wating / 끝나면 상대방이 임계구역 나가면서 lock을 false로 만들고 시간할당량 20 다쓰면 다시 문맥교환 / lock이 false이므로 들어가서 사용
+-3) P(S)에서 바로 block시켜 문맥교환함 / 상대방이 임계구역을 빠져나가면서 V연산을 하여 wake up 시킴 / 다시 문맥교환이 되면 임계구역을 실행시키고 나감
+[14:23 문제]
+공유자원이 의자와 식탁임
+-1) 6, 3
+-2) 10, 3, 2
+-3) 
+[15:35 문제]
+1000번 연산이 끝나야 다른 프로세스가 접근가능, P,V연산을 반복문 안에 넣어야함
+[16:35 문제]
+- 상호배제가 안됨
+- 세마퍼를 사용하는 모든 프로세스가 block상태에서 무한 대기
+
+
+
+
+
+지금까지의 동기화 기법(Dekker, Peterson, TS, 세머퍼)은 프로그래머가 직접 동기화를 제어해주므로 오류 발생이 쉬움 ( P()연산과 V()연산을 반대로 작성하는 등 )
+-> 전문가가 동기화코드를 작성하고 사용자가 사용하기 쉬워짐 -> 모니터, ....
+
+모니터
+- 공유데이터&임계지역 코드의 집합
+- 그 안에서 상호배제가 이루어지도록 os가 지원
+- 사용자는 모니터에 함수 호출을 통해서 접근
+
+- 상호배제 매커니즘(모니터에 한번에 하나만진입) 자동 보장
+- 공유자원은 외부에서 접근불가능(임계지역의 코드의 함수를 통해서만)
+- 모니터안에서 실행하는 함수 갯수만큼 Entry queues존재
+- 프로세스가 실행하다 block되면 Condition queues에서 대기
+- 모니터에서 실행중인 프로세스가 나가는 과정에서 releaseRi() 코드를 실행하여
+Condition queues에 대기하는 프로세스 하나가 모니터에 들어오는데
+이때 모니터내에 프로세스 두개가 존재하면 안되므로 기존의 프로세스가 
+Siganler queues에 들어가 대기함
+
+ex)
+monitors resourceRiAllocator;
+boolean RiIsAvailable;	// boolean type 공유변수
+condition RiIsFree;
+
+void requestRI(){
+  if (!RiISAvailable)		// false면 Condition queues에서 대기
+    RiIsFree.wait();
+  RiIsAvailable = false;	// true면 false로 해놓고 진입
+}
+
+void releaseRi(){
+  RiIsAvailable = true;	// true로 만들고 
+  RiIsFree.signal();		// signal을 보내고 나감
+}
+
+{  RiIsAvailable = true; }	// 공유변수 초기화
+
+23:40초 모니터 사용 예시
+
+
+
+

@@ -1,0 +1,169 @@
+9-1 JTextField
+
+Border Layout이고
+시계가 그려진 Panel은 Center에 JTextField가 배치되는 Panel은 South에 배치됨
+
+Document/DocumentListener(JTextfield에 글자의 변화가 있을때 호출됨)
+: JTextField안에 들어가는 문자열을 관리하는
+- method :
+insertUpdate(DocumentEvent e) 데이터추가
+removeUpdate(DocumentEvent e) 데이터삭제
+
+JTextField
+JTextField tfield = new JTextField();
+tfield.getText();	//입력된 text 가져오기
+tfield.setHorizontalAlignment(JTextField.Right); // TextField내 글자 alignment위치
+
+
+
+
+integer값만 받는 textfield 직접 구현하기(아닐시 runtime error가능성)
+첫번째필요조치 IntTextField 객체 구현
+extends JTextField
+constructer argument: int data, int size
+constructer body: super("" + data, size);
+함수구현: 
+protected Document createDefaultModel(){ return new IntTextDocument();}
+// 정수가 아닌 data가 들어오는 경우 처리
+public int getValue(){
+  try{
+    return Integer.parseInt(getText());	//textfield의 data받아서 int로 돌려줌
+  } catch (NumberFormatException e){
+    return 0;
+  }
+}
+public boolean checkValid(){	//data type 체크해서 int아닐시 false 리턴
+  try{
+    Integer.parseInt(getText());
+    returntrue;
+  } catch (NumberFormatException e){
+    return false;
+  }
+}
+
+두번째필요한 조치사항
+IntTextDocument 객체 구현
+extends PlainDocument 
+public void insertString() 오버라이드
+// try부분의 parseInt는 Int로 바꾸려고하는게 아니라 시도해서 exception이 발생하는지 확인하려고
+  
+
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
+import java.awt.*;
+import java.awt.event.*;
+class ValidationTestFrame extends JFrame implements DocumentListener {
+    private IntTextField hourField;
+    private IntTextField minuteField;
+    private ClockPanel clock;
+    ValidationTestFrame(){
+        setTitle("ValidationTest");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        JPanel p = new JPanel();
+        hourField = new IntTextField(12, 3); // field에 입력할 data, size
+        p.add(hourField);
+        hourField.getDocument().addDocumentListener(this); 
+        // jtextfield가아닌 document를 불러와서 listenr add
+
+        minuteField = new IntTextField(0, 3);
+        p.add(minuteField);
+        minuteField.getDocument().addDocumentListener(this);
+
+        contentPane.add(p, "South");    // Border Layout, etc참고
+        clock = new ClockPanel();
+        contentPane.add(clock, "Center");
+    }
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        setClock();
+    }
+    public void removeUpdate(DocumentEvent e) {
+        setClock();
+    }
+    public void changedUpdate(DocumentEvent e) {
+
+    }
+    public void setClock(){
+        if (hourField.checkValid() && minuteField.checkValid()) {
+            int hours = hourField.getValue();
+            int minutes = minuteField.getValue();
+            clock.setTime(hours, minutes);
+        }
+    }
+}
+class IntTextField extends JTextField{
+    public IntTextField(int defval, int size) { // field에 입력할 data, size
+        super("" + defval, size);
+    }
+    protected Document createDefaultModel(){ // 반드시 필요한 조치사항 key에서 써준 함수처럼
+        return new IntTextDocument();
+    }
+    public boolean checkValid(){
+        try {
+            Integer.parseInt(getText());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    public int getValue(){
+        try {
+            return Integer.parseInt(getText());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+}
+class IntTextDocument extends PlainDocument{
+    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException{
+        if(str == null) return;
+        String oldString = getText(0, getLength());
+        String newString = oldString.substring(0, offs) + str + oldString.substring(offs);
+        try {
+            Integer.parseInt(newString + "0");  // int로 형변환이 에러시 exception이 catch됨
+            super.insertString(offs, str, a);
+        } catch (NumberFormatException e) {
+        }
+    }
+}
+class ClockPanel extends JPanel{
+    private int minutes = 0;
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawOval(0,0,100,100);
+        double hourAngle = 2 * Math.PI * (minutes - 3 * 60) / (12 * 60);
+        double minuteAngle = 2 * Math.PI * (minutes - 15) /60;
+        g.drawLine(50, 50, 50 + (int) (30 * Math.cos(hourAngle)), 50 + (int) (30 * Math.sin(hourAngle)));
+        g.drawLine(50, 50, 50 + (int) (45 * Math.cos(minuteAngle)), 45 + (int) (30 * Math.sin(minuteAngle)));
+    }
+
+    public void setTime(int h, int m) {
+        minutes = h * 60 + m;
+        repaint();
+    }
+    public void tick(){
+        minutes++;
+        repaint();
+    }
+}
+
+public class ValidationTest {
+    public static void main(String[] args) {
+        JFrame frame = new ValidationTestFrame();
+        frame.setVisible(true);
+    }
+}
+
+

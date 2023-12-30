@@ -1,0 +1,29 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class CloseableFrame extends JFrame{
+    CloseableFrame(){
+        setTitle("CloseableFrame");
+        Toolkit tk = Toolkit.getDefaultToolkit();   //Toolkit: 자바환경변수정보, 하드웨어정보
+        Dimension d = tk.getScreenSize();   // Dimension: 폭과 높이 정보를 가진 객체
+        int screenHeight = d.height;
+        int screenWidth = d.width;
+        setSize(screenWidth/2, screenHeight/2);
+        setLocation(screenWidth / 4, screenHeight / 4);
+
+        addWindowListener(new WindowAdapter() {	//WindowListener
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+    }
+}
+public class FirstTest {
+    public static void main(String[] args) {
+        JFrame frame = new CloseableFrame();
+        frame.setVisible(true);
+    }
+}
+
+//Toolkit: 하드웨어정보

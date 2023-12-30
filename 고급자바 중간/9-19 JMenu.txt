@@ -1,0 +1,94 @@
+9-19 JMenu
+
+JMenubar
+JMenu
+JMenuItem
+JRadioButtonMenuItem
+JPopupMenu
+
+MenuListener
+- public void menuSelected(MouseEvent e){}	// 얘만 중요함
+- public void menuCanceled(MouseEvent e){}
+- public void menuDeselected(MouseEvent e){}
+
+
+ex) Frame에서
+JMenuBar mbar = new JMenuBar();
+setJMenuBar(mbar);	// JMenuBar장착	#
+
+JMenu fileMenu = new JMenu("File");
+mbar.add(fileMenu);	// JMenu를 JMenuBar에 장착	#
+
+JMenuItem openItem = new JMenuItem("Open");
+openItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+// JMenuItem에 Accelerator사용, ctrl+O	#
+openItem.addActionListener(Listener구현객체);	// JMenuItem에 actionListener등록	#
+fileMenu.add(openItem);			// JMenu에 JMenuItem을 장착	#
+
+fileMenu.add(new Separator());	// JMenu에 Separator추가(item과 item사이의 구분선)	#
+
+JMenu subMenu = new JMenu("SubMenu");
+fileMenu.add(subMenu);		// JMenu에 JMenu를 MenuItem처럼 또 넣을 수 있음	#
+
+JCheckBoxMenuItem cbItem = new JCheckBoxMenuItem("CBItem");  // JCheckBoxMenuItem 
+cbItem.addActionListener(Listener구현객체);	// actionListener등록
+fileMenu.add(cbItem);		// JMenu에 JCheckBoxMenuItem 장착		#
+
+ButtonGroup group = new ButtonGroup();
+JRadioButtonMenuItem apple = new JRadioButtonMenuItem("Apple");
+JRadioButtonMenuItem banana = new JRadioButtonMenuItem("Banana");	// JRadioButtonMenuItem #
+apple.setSelected(true);	// default로 선택되어있는 radioButtonItem 설정
+apple.addActionListener(Listener구현객체);
+banana.addActionListener(Listener구현객체);	// actionListener등록
+group.add(apple);
+group.add(banana);		// radio group에 추가
+fileMenu.add(apple);
+fileMenu.add(apple);	// JRadioButtonMenuItem를 JMenu에 장착
+// MenuListener의 EventHandler함수에서 apple.isSelected() 로 선택되어있는지 여부 확인가능	
+
+JMenu helpMenu = new JMenu("Help");	// 새 Menu
+helpMenu.setMnemonic('H');		// JMenu에 Mnemonic 사용, H	#
+// JMenuItem에도 Mnemonic 사용가능
+mbar.add(mbar);		// JMenu를 JMenuBar에 장착
+
+JPopupMenu popup = new JPopupMenu();	// JPopupMenu		#
+JMenuItem pItem = new JMenuItem("PItem");
+popup.add(pItem);
+getContentPane().addMouseListener(new MouseAdapter(){
+// 마우스 오른쪽 버튼(popup trigger)가 Released되었을때 작동
+  public void mouseReleased(MouseEvent e){	
+    if(e.isPopupTrigger()){
+      popup.show(e.getComponent(), e.getX(), e.getY());
+    }
+  });
+}
+
+
+ex) MenuListener의 EventHandler 구현
+public void menuSelected(MenuEvent e){
+  jMenuItemA.setEnabled(true);	// 해당 JMenu의 JMenuItem선택을 활성화(true)/비활성화(false)	#
+
+}
+// 나머지 핸들러 2개는 안중요
+// JMenu객체에 MenuListener 등록 (jmenu.addMenuListener(구현객체);)
+
+// nemonic, accelerator
+
+// 아래예제에서는 JMenu와 JMenuItem을 만드는 코드를 묶어서 함수로 만들어 사용, 실무에서는 그냥 원래대로 작성
+--------------------------------------------------------------------
+생략
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+아래예제 _일상생활에서 쓰는 메뉴의 대부분의 예

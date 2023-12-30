@@ -1,0 +1,103 @@
+9-6 JRadioButton
+하나씩만 선택가능
+
+ButtonGroup이 필요(여러개의 버튼이 그룹으로 묶여야하니까)
+ex) ButtonGroup group = new ButtonGroup();
+group.add(button);	// 버튼을 그룹에 추가
+panel.add(button);	// 버튼을 panel에도 추가
+button.addActionListener(panel);  // 버튼에 actionListener추가
+
+public void actionPerformed(ActionEvent e){	// Jbutton과 같은식으로 작성
+  Object source = e.getSource();
+  if(source == checkButton1){
+    ~;
+  } else if (source == checkButton2{
+    ~;
+  }
+}
+
+---------------------------------------------------
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class RadioButtonTestPanel extends JPanel{
+    public RadioButtonTestPanel(){
+        setSize(12);
+    }
+
+    public void setSize(int p) {
+        setFont(new Font("SansSerif", Font.PLAIN, p));
+        repaint();
+    }
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawString("The quick brown fox jumps over the lazy dog.", 0, 50);
+    }
+}
+class RadioButtonFrame extends JFrame implements ActionListener{
+    private RadioButtonTestPanel panel;
+    private JRadioButton smallButton;
+    private JRadioButton mediumButton;
+    private JRadioButton largeButton;
+    private JRadioButton xlargeButton;
+
+    RadioButtonFrame(){
+        setTitle("RadioButtonTest");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        ButtonGroup group = new ButtonGroup();  // button group
+        smallButton = addRadioButton(buttonPanel, group, "Small", false);
+        mediumButton = addRadioButton(buttonPanel, group, "Medium", true);
+        largeButton = addRadioButton(buttonPanel, group, "large", false);
+        xlargeButton = addRadioButton(buttonPanel, group, "Extra large", false);
+
+        getContentPane().add(buttonPanel, "South");
+        panel = new RadioButtonTestPanel();
+        getContentPane().add(panel, "Center");
+    }
+    public JRadioButton addRadioButton(JPanel buttonPanel, ButtonGroup g, String buttonName, boolean v) {
+        JRadioButton button = new JRadioButton(buttonName, v);
+        button.addActionListener(this);
+        g.add(button);
+        buttonPanel.add(button);
+        return button;
+    }
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == smallButton) {    //button객체 변수명으로 눌러진 버튼 구분
+            panel.setSize(8);
+        } else if (source == mediumButton) {
+            panel.setSize(12);
+        } else if (source == largeButton) {
+            panel.setSize(14);
+        } else if (source == xlargeButton) {
+            panel.setSize(18);
+        }
+    }
+}
+public class RadioButtonTest {
+    public static void main(String[] args) {
+        JFrame frame = new RadioButtonFrame();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

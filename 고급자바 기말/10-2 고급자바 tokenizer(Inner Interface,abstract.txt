@@ -1,0 +1,75 @@
+10-2 고급자바 tokenizer
+token : 문법을 구성하는 최소 단위 
+compile절차 : java파일입력 -> tokenize(lexical analysis)(어휘분석) -> token sequence -> parsing(syntax analysis)(구문분석) -> 자료구조 parse tree -> intermediate code pmerator -> 기계어 -> optimizer -> 최적화된 코드블럭 -> code generation -> 마지막 기계어 
+
+해당장에서는 tokenizer보다 구현하는데 사용한 문법위주로 설명
+- this를 return하는 함수의 용도
+- inner interface
+- Abastract 클래스
+
+* 객체를 setting하는 함수들 사용 방법
+1)
+Pen aPen = new Pen();
+aPen.setColor(Color.red);
+apen.setThickness(5);
+aPen.goto(200,400);
+aPen.drawTo(700,900);
+// 함수의 return type이 void
+
+2)
+Pen aPen = new Pen();
+aPen.setColor(Color.red).setThickness(5).goto(200,400).drawTo(700,900);
+// 함수의 return type이 Pen, this를 return;
+
+
+* Inner Interface
+- 인터페이스 내부의 인터페이스
+- 부모 interface를 구현한 class 안에 inner interface를 구현하는 inner class를 만듦
+- 메인메소드에서 상위 인터페이스 구현객체에 inner 인터페이스 구현객체를 장착
+
+1. 인터페이스 선언 ex)
+public interface Tokenizer{
+  public Tokenizer skipSpaces(boolean skips);
+
+  public static interface WordRecognizer{	// inner interface
+    public boolean isWordStart(char c);
+  }
+}
+2. Inner interface 구현 ex)
+class MyTokenizer implements Tokenizer{
+  public Tokenizer skipSpaces(boolean skips){
+    ~
+  }
+  static class MyRecognizer implements Tokenizer.WordRecognizer{
+    public boolean isWordStart(char c){
+      ~
+    }
+  }
+}
+3. 메인 메소드에서 사용 ex)
+MyTokenizer mt = new MyTokenizer();
+MyRecognizer mr = new MyRecognizer();
+mt.wordRecognizer(mr);	// 상위 인터페이스에 inner 인터페이스구현객체를 장착시키는 메소드, argument로 장착, 장착시키는 method implementation은 찾아보기
+
+
+* Abstact Class
+- abstract function을 가지고 있는 경우
+// abstract function은 function body가 없음
+- 자식 Class에서 Abastract Class를 상속받아 Abstract function을 구현해서 사용해야 함
+- 그림판에서 line, rect, circle 클래스들이 공통적으로 가지는 함수(draw()등)을 가지고 있는
+부모클래스가 abstract 클래스 였음, 그리고 draw()를 abstract function으로 가지고 있었음
+
+ex)
+public abstract class AbastractTokenizer{
+  protected abstract boolean fillBuffer();
+}
+
+
+
+
+
+
+
+
+
+

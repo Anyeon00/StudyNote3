@@ -1,0 +1,6 @@
+*button같은 곳에 add~Listener로 listener를 추가하는데, 여러개 추가할 수도 있음
+주의점: 실행되는 순서는 보장안됨
+
+*removeListener도 있음
+
+*new를 눌러서 frame이 생성될때마다 close all 버튼에 각 프레임의 Listener가 등록됨

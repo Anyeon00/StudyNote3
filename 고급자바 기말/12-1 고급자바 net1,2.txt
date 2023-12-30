@@ -1,0 +1,159 @@
+12-1 고급자바 net1,2 윈도우프로그램(캡스톤)폴더의 tcp/ip문서 참고
+/* 
+윈도우프로그램(캡스톤)폴더 tcp/ip문서 내용 발췌
+
+서버측 프로그램구조 : 
+서버 - 포트 - server socket - while(client socket, thread)
+* 서버컴퓨터의 프로그램자체가 서버
+* 서버(프로그램)에 여러 포트(서비스)가 있으므로 포트도 thread객체임 (유명 port number : 13:DAYTIME, 80:HTTP, 443:HTTPS)
+* 포트thread run()시 서버소켓 instantiation 후 
+while문 들어가서 사용자생길때마다 client socket과 thread객체 instantiation반복
+* 위 thread객체를 thread를 상속받은 객체로 구현, run()함수에 하는일 구현, 여기에 inputStream&ouputStream생성
+
+client측 프로그램구조 :
+메인판넬 - 버튼 클릭시 Socket생성(받는구멍,보내는구멍)
+* 그 버튼의 actionPerformed함수에서 socket 생성후 inputStream,outputStream열고 하는일 구현
+*/
+// stream이 파이프고 server쪽 outputStream의 입구가 client쪽 inputStream의 입구에 이어지는 구조
+
+
+5장 network
+- server 여러종류로 만드는법
+- client 여러종류로 만드는법
+- 프로토콜 종류 : TCP/IP, UDP
+tcp/ip : reliable이 높음(신뢰성)
+* TCP/IP의 종류 - 단답형, 대화형
+
+* 가장 중요한 프로그램 _comdong.bufs.ac.kr/ktg/ 의 고급자바프로그래밍의 자바예제수업자료 참고(또는 유미뒷발정수 하드에 들어있는거)
+Example 5-4 Connect.java // client쪽, 단답용 서비스 _멀티스레드가 아닌 시퀀스프로그램
+ex)
+메인함수에서
+Socket s = new Socket(hostname, port);
+OutputStream out = s.getOutputStream());
+out.print("~");
+out.flush();
+
+BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+// InputStreamReader로 받아야 byte를 character로 받을수잇음, BufferedReader로받아야 readLine()을 쓸수있음
+
+String line;
+while((line = in.readLine()) ~= null) sout(line);
+
+
+Example 5-5 GenericClient.java // client쪽, 대화형 _멀티스레드 프로그램
+Example 5-10 Server.java
++ UDP프로그램 2개
+반드시 이해
+// 5-1 GetURL 가장 기초
+
+*
+Client 
+필요정보 : 어떤 사이트(IP address _또는 사이트주소), 어떤 서비스(port number)
+위 2개로 socket생성 ex) s = new socket(ip,100)
+구조 : 메인프로그램 
+- 서버정보를 가진 Socket
+- 필요 stream들 _보통 read(), write()로 주고받음
+
+Server
+구조 : 메인프로그램(서버)
+- 포트(ServerSocket) : 클라이언트 접속을 기다림
+- 클라이언트소켓(Socket)
+- 필요 stream들
+
+* 보낼땐 PrintWriter객체를 통해 println(), 받을땐 BufferedReader객체를 통해 readLine()
+* 개행을 TextArea에 출력하는 함수에서 string + "\r\n"해야 제대로 개행됨
+----------------------------------------------------------------------
+[5-5 GenericClient.java] // Client에 대한 예시  // 짜볼때 예제프로그램도 같이 보면서 짜야
+Server와 Client의 상호작용 구조:
+키보드(System.in) -> Generic Client Program -> 서버		// 1번
+모니터(System.out) <- Generic Client Program <- 서버		// 2번
+서버와 Client는 서로 소켓(stream 2개가 있는)을 가짐
+* 키보드에서 서버로, 서버에서 모니터로 2가지 일을 해야하므로(위 1번과 2번)각각 2개의 Thread로 구현, 
+하나는 메인 Thread(프로그램자체도 thread)에 하나는 새로운 Thread에 구현
+
+ex) 메인클래스에서
+Socket s = new Socket(host, post);  // 서버정보를 가진 Socket			1번
+Reader from_server = new InputStreamReader(s.getInputStream());  // Client Program <- 서버
+PrintWriter to_server = new PrintWriter(s.getOutputStream());	// Client Program -> 서버
+
+BufferredReader from_user = new BufferedReader(new InputStreamReader(System.in)); // 키보드 -> Client program		2번
+PrintWriter to_user = new PrintWriter(System.out, true); // 모니터 <- Client Program
+
+Thread t = new Thread(){	// anonymous object로
+  public void run(){		// 여기에 상호작용 구조 1,2번중 하나 구현 _2번 구현함
+    char[ ] buffer = new char[1024];		
+    int char_read;
+    try{
+      while((char_read = from_server.read(buffer)) != -1){ // from_server(서버)에서 데이터받아서		3번
+        to_user.write(buffer, 0, char_read);  // to_user(모니터)에 출력		
+        to_user.flush();
+      }
+    } catch(IOException ex){}
+  }  
+};
+t.start();
+
+//여기에 1,2번중 다른 하나 구현 _1번구현
+String line;
+while((line = from_user.readLine()) != null){
+  to_server.print(line + "\r\n");
+  to_server.flush();  // flush해줘야 buffer에 남은 문자없이 다 보내짐(화장실 물내리는 행동)
+};
+  
+s.close();
+
+
+
+---------------------------------------------------------------
+[5-8 HttpMirror.java] // Server에 대한 예시 _위는 서버에서 클라이언트에서 키보드로 또는 반대로 2번에 걸쳐 전송하는걸 구현했지만 이프로그램은 Server에서 Client로, Client로부터 서버로 전송하는 것만 구현(화면으로 결과확인은 웹브라우저를 이용해서 했는데 이부분은 아래에 설명X)
+
+ex) 메인클래스에서
+int port = 4000;
+ServerSocket ss = ServerSocket(port);	// 포트(server socket)		1번
+// 서버입장에서 (클라이언트의 요청을 기다리는)대기형 Socket을 만들어줘야함 _listener같은
+// 원하는 port number에 만들수 있음 _위에서는 4000
+
+for(;;){
+  Socket client = ss.accept(); // Client Socket		2번
+  // 코드 실행시 (클라이언트 요청이 오기전까지) blocked되어 있음
+  // ServerSocket에 클라이언트의 요청이 도착할시 client socket 생성
+
+  BufferedReader in = new BufferedReader(new InputSteamReader(client.getInputSteam());	3번
+  // client입장에서의 inputStream
+  PrintWriter out = new PrintWriter(client.getOutputStream());
+  // client쪽으로 outputStream, 근데 여기선 안보내므로 OutputStreamWriter데코레이션안함
+
+  /*
+  out.print("HTTP/1.1 200 \r\n");
+  out.print("Content-Type: text/plain\r\n");
+  out.print("Connection: close\r\n");
+  out.print("\r\n");
+  웹 브라우저와 연결시 웹브라우저로 헤더정보 응답을 보내줘야함
+  */  
+
+  String line;
+  while((line = in.readLine()) != null){  // client stream으로부터 읽기		4번
+    if(line.length() == 0) break;
+    // line을 String array에 저장을 하든 마음대로
+  }
+
+  out.print("~~");  // client로 보내기
+  // out.flush(); 예제코드에서 왠지 안적혀있음
+
+  out.close();
+  int.close();
+  client.close();
+}
+
+* 웹서버에서 접속시 ipAddress는 server와 동일 ip의 client로 접속할시(즉 자기컴퓨터하나로 서버도만들고 클라이언트띄워서 접속할시), localhost라고 쳐줌
+ex) http://localhost:4000/
+* 4000은 포트번호
+----------------------------------------------------------------------------------
+서버와 클라이언트가 상호작용하는 프로그램예시는 윈도우프로그램(캡스톤)폴더 tcp/ip 문서 참고
+
+* Proxy 프록시(대리인) : 클라이언트와 서버 사이에서 중개하는 서버
+(프록시 서버에서 클라이언트의 ip를 보고 서버로의 연결을 차단하거나 데이터를 가공해서 전송등을 함)
+(클라이언트에게 본 서버의 ip는 숨겨놓고 프록시서버주소를 오픈)
+
+
+* 참고로 웹브라우저는 HTTP(80번 포트)에 접속하기 위한 Client

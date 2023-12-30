@@ -1,0 +1,9 @@
+15-2 고급자바 datatransfer
+
+클립보드를 이용해 프로세스간 data를 주고받는기술
+ex) 
+아래한글에서 ctrl+c해서 메모장에 ctrl+v, drag & drop
+
+Transferable
+
+TransferHandler

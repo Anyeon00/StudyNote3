@@ -1,0 +1,47 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+class DrawPolyPanel extends JPanel{
+    public void paintCompoent(Graphics g) {
+        super.paintComponent(g);
+
+        int r = 40;
+        int cx = 50;
+        int cy = 100;
+        int angle = 30;
+
+        int dx = (int) (r * Math.cos(angle * Math.PI / 180));
+        int dy = (int) (r * Math.sin(angle * Math.PI / 180));
+
+        g.drawLine(cx, cy, cx + dx, cy + dy);
+        g.drawLine(cx, cy, cx + dx, cy - dy);
+        g.drawArc(cx-r, cy-r, 2*r, 2*r, angle, 360-2*angle); //시작x, y, width, height, 시작각, 끝나는각
+
+        Polygon p = new Polygon();  //polygon객체 생성
+        cx = 150;
+        int i;
+        for (i = 0; i < 5; i++) {   //polygon객체에 (x,y)포인트 추가
+            p.addPoint((int) (cx + r * Math.cos(i*2*Math.PI/5)), (int) (cx+r*Math.sin(i*2*Math.PI/5)));
+        }
+        g.drawPolygon(p);   //polygon객체 p를 이용해 drawPolygon
+    }
+}
+class DrawPolyFrame extends JFrame{
+    DrawPolyFrame(){
+        setTitle("DrawPoly");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        contentPane.add(new DrawPolyPanel());
+    }
+}
+public class DrawPoly {
+    public static void main(String[] args) {
+        JFrame frame = new DrawPolyFrame();
+        frame.setVisible(true);
+    }
+}

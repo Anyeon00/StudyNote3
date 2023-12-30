@@ -1,0 +1,13 @@
+14-1 고급자바 gui1
+
+중간고사때 다 한 내용 
+주마간산으로 보기
+
+* 웹브라우저를 윈도우컴포넌트에 띄우기
+JEditorPane p = new JEditorPane();
+URL url = new URL("https://naver.com/");
+p.setPage(url);
+
+
+자바빈 JavaBean
+: 모든 property에 대해 access가능한 GUI Object

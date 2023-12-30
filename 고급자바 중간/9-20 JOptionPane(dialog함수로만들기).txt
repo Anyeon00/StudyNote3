@@ -1,0 +1,27 @@
+9-20 JOptionPane
+
+간단한 대화상자(Dialog)
+-> 굳이 클래스로 만들지말고 함수로 생성가능
+
+JOptionPane 클래스사용,
+show로 시작하는 static function들이 많음 -주로 아래 4가지 사용
+
+- showMessageDialogue(parentComponent, message, title, messageType) // 단순 메세지 팝업
+// parentComponent는 주로 null
+// message는 내용
+// title은 타이틀
+// messageType은 기본아이콘 - ERROR_MESSAGE, INFORMATION_MESSAGE, QUESTION_MESSAGE, WARNING_MESSEAGE 총 4가지 존재
+
+- showConfirmDialog(parentComponent, message, title, optionType, messageType)	// 선택옵션 제공 팝업
+
+- showInputDialoge(parentComponent, message, initialMesage)	// 입력값 받는 팝업
+
+- showOptionDilog(...
+
+
+ex)
+JOptionPane.showMessageDialogue(null, "표시될메세지", "타이틀내용", JOptionPane.PLAIN_MESSAGE);
+
+
+
+www.shin-01.tistory.com/34 에 요약

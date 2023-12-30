@@ -1,0 +1,120 @@
+1022 운영체제 동기화5
+
+동기화5
+
+생산자-소비자문제에 모니터 적용 예 00:50
+validBufs : 공유자원
+
+생산자:
+fillBuf 코드에서 validBufs == N 이면 버퍼가 꽉 찼다는 뜻
+마지막에 소비자에게 signal보냄
+
+소비자:
+emptyBuf에서 validBufs == 0 이면 wait(소비자니까 자원이 들어올때까지 기다리는거)
+마지막에 생산자에게 signal보냄
+
+[4:00 문제]
+-1) modular연산이 빠지면 index가 배열의 크기를 벗어남
+-2) 생산자가 생산했는데 소비자가 아직 소비하지 않은 채워져있는 buffer의 갯수
+-3) 소비자가 buffer를 비운다음에 signal을 보내주는 코드 부분에서
+
+
+ 
+
+Reader-writer 문제에 모니터 적용 예 5:40
+(reader는 동시작업, writer간 상호배제) _중간고사에 동기화파트 reader-writer문제 부분 참고
+
+구현코드설명(그냥 영상 다시한번 보는게 깔끔할지도)
+int numReaders;	// readers갯수(counting 세마퍼역할)
+boolean writing;	// writer간 상호배제 세마퍼역할
+condition readingAllowed, writingAllowed;	// condition queue
+
+void beginReading(){
+  if(writing || writing condition큐에 존재) readerAllowed에서 대기;	// writing중이면 당연히 대기, writer가 큐에 존재하면 writer의 무기한 대기 방지위해 reader가 대기;
+  writing중이면 condition 큐에서 대기;
+  numReaders++;
+  readingAllowed에 signal;	// 위에 reader condition큐에서 대기(wait)가 풀리고 이 코드가 실행되면 나머지 reader들도 모두 다 깨워줌
+}
+void finishReading(){	// 이두개는 reader가 호출
+  numReaders--;
+  if(numReaders == 0) Writer에게 signal;
+}
+void beginWriting(){
+  if(numReaders>0 || 다른 Writer가 쓰고있거나) Condition 큐에서 대기;
+}
+void finishWriting()	{	// 이 두개는 writer가 호출
+  if(reader Condition큐에 누가 있으면) readingAllowed에 signal;	//읽기는 여러명 처리가능하므로 writer보다 먼저
+  else writingAllowed큐에 signal;
+}
+
+* Writer 무기한 대기 문제: beginReading()의 조건문참고
+
+***
+요약: 1. Reader는 동시에 실행가능
+2. Writer와 Reader간 상호배제
+3. Writer의 무기한대기 방지위해 Writer가 대기중이면 그 뒤에 들어온 Reader는 대기
+4. Writer작업이 끝났을때 대기중엔 Writer와 Readers들중 Readers를 wake up해 순서대로 실행
+5. Reader작업이 시작할때 마지막코드에 다른 readers모두 깨워서 같이실행
+6. Reader작업이 끝나면 Writer에 signal
+
+[13:00 문제]
+- 세마포문제에서는 중간에 writer가 들어와도 reader만 계속 실행해는데, 여기서는 위에 코드처럼
+writer condition큐에 대기하는 writer가 있으면 write의 무한대기방지를 위해 reader를 condition큐에 대기시킴,
+write가 끝났을때 reader큐와 writer큐에 모두 대기 중이면 reader에 우선권을 주고 reader들을 모두 wake up
+
+[16:05 문제]
+reader들은 한번에 처리할 수 있는데도 불구하고 reader가 하나씩만 깨어나서 처리됨
+[17:30 문제]
+
+
+
+
+
+Dining Philosopher 문제
+: 5명의 철학자, 5개의 포크, 철학자와 포크가 번갈아 원으로 모여있음,
+ 포크가 두개 있어야 식사가능, 생각&식사를 반복
+- 문제: 교착상태 _모두가 왼쪽 포크를 하나씩 가지고 있으면 영원히 모두가 block되어있음
+-> OS가 처리해야함: 가장 약한 프로세스를 중단시키고 자원을 뺏어서 해결
+ex) 포크를 하나씩 들지 못하게 하고 양쪽에 두개가 있을때 한번에 들도록
+
+구현코드 설명:
+void pickup(int me){	// 철학자me가 포크를 드는 경우
+  if(포크 2개가 없으면) wait;
+  내 왼쪽과 오른쪽 철학자의 포크를 --;
+}
+void putdown(int me){	// 철학자me가 포크를 내려놓는 경우
+  내 왼쪽과 오른쪽 철학자의 포크를 ++;
+  if(왼쪽이나 오른쪽 철학자 포크 == 2) 그쪽 철학자에게 signal;
+}
+
+
+
+
+[23:00 문제]
+-1) 모니터에 하나만 들어가야하므로 entry queue에서 기다렸다가 들어가도록
+-2) 모니터에서 실행하다 block되는 경우 condition queue에 가서 기다림
+-3) 모니터에서 signal을 보내서 깨워줄떄 깨워준애가 모니터에 진입하기위해 잠깐 비켜주기 위해 signaler queue에서 대기
+
+
+
+8주차 퀴즈 
+17 번은 block되고(세마포이므로)
+18번은 running됨(busy wating하니까)
+19
+- P가 생산자 C가 소비자
+생산자가 소비자에게 시그널 보내주는 코드가 생략됨
+-> condition 큐에서 대기중인 소비자가 시그널을 못받음
+* 마지막 C3는 condition큐에 들어간게 아니라 entry큐로 들어와서 바로 실행되므로 condition큐에 시그널 주는 코드가 생략된 거랑 상관없음
+정답: c2
+22번
+두개를 먹는놈이 있음 걔네는 제대로 실행되지만
+어떤 놈은 계속 못먹고잇는거임 그러니까 교착상태가아니라 무기한연기
+
+
+
+* 8주차 동기화프로그램사례 시험X
+-> 자바에서 public synchronized void setMemory(int memory){~}
+// 여기서 synchronized라는 예약어 사용하면 자동으로 상호배제시켜줌
+Excutors.newFixedThreadPool(n);	// Thread n개 생성
+
+

@@ -1,0 +1,26 @@
+9-3 고급자바1027
+
+1. Basics
+1-1. hello
+
+* 도스창 컴파일코드
+javac -classpath ..\.. xxx.java : 상대경로 	(옵션으로 루트파일 위치를 적어주는 것)
+javac -classpath C:\..\..\.... xxx.java: 절대경로 
+
+package je3.basics;
+public class Hello {
+~
+}
+클래스 풀네임 : je3.basics.Hello
+
+
+* 도스창 실행코드
+java -cp 루트파일위치 je3.basics.Hello	(실행시엔 클래스 풀네임을 적어줘야함)
+
+1-4 command-line argument
+batch file: 도스창에 쓸 코드를 미리 써놓은 코드 // REM : REMARK(주석)
+
+psvm(String[] args)에서 args에는
+실행코드에서 실행코드를 제외한 뒤에 입력한 부분만 들어감
+즉 실행코드 + abcde fghij 라고 쓰면 args에 abcde fghij만 들어감
+

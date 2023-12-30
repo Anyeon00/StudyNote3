@@ -1,0 +1,25 @@
+0916-2 운영체제 컴구조보충
+
+I/O의 발전과정
+
+1. 프로그램된 제어 I/O
+- 기계어로 입출력 제어 _cpu가 직접 I/O장치를 제어(입력이 끝났는지 계속 반복확인하는작업 _busy waiting)
+(blocked된게 아님 계속 실행되고 있음)
+
+2. 인터럽트에 의한 I/O
+- I/O를 만나면 blocked시켜버림(busy waiting없앰)
+- 준비(입력)가끝나면 인터럽트가 시그널로 cpu에게 알려줌 -> blocked된애가 wakeup되어 ready로 바뀜
+- 문제점: 긴 data를 읽어올때 한 data를 가져올 때마다 blocked됐다가 running됐다가 반복됨
+(busy waiting만 없어졌지 일일이 cpu가 작업해야한다고 함)
+
+3. Direct Memory Access(DMA)
+- 요즘
+- I/O 전담 프로세서가 있음
+- cpu와 별개로 I/O 프로세서가 명령어를 다 수행한 다음 마지막 한번만 인터럽트를 줌
+- cpu를 거치지 않고 직접 I/O장치가 메모리에 접근한다고 해서 Direct Memory Access
+
+=> 차이 : 2번까지는 cpu가 직접 관여해 처리했지만 3번은 cpu제어없이 처리함
+
+
+
+

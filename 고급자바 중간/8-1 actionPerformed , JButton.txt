@@ -1,0 +1,66 @@
+
+-----------------------------
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+class ButtonPanel extends JPanel implements ActionListener{
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+    }
+    private JButton yellowButton;
+    private JButton blueButton;
+    private JButton redButton;  // 1. Button생성
+    public ButtonPanel(){
+        yellowButton = new JButton("Yellow");
+        blueButton = new JButton("Blue");
+        redButton = new JButton("Red");  // 2. instanciation
+
+        add(yellowButton);
+        add(blueButton);
+        add(redButton); // 3. panel에 Button추가
+
+        yellowButton.addActionListener(this);
+        blueButton.addActionListener(this);
+        redButton.addActionListener(this);   // 4. 각 버튼에 ActionListener추가
+
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {    // 5. ActionListener구현
+        Object source = e.getSource();  //눌러진버튼에 대한 정보
+        Color color = getBackground();
+        if(source == yellowButton){     //버튼 yellowButton이 눌러졌을때
+            color = Color.yellow;
+        } else if (source == blueButton) {
+            color = Color.blue;
+        } else if (source == redButton) {
+            color = Color.red;
+        }
+        setBackground(color);
+        repaint();
+    }
+}
+class ButtonFrame extends JFrame{
+    ButtonFrame(){
+        setTitle("ButtonTest");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        contentPane.add(new ButtonPanel());
+    }
+}
+public class ButtonTest {
+    public static void main(String[] args) {
+        JFrame frame = new ButtonFrame();
+        frame.setVisible(true);
+    }
+}
+
+* Button을 data member로 선언하지 않았을때 class에 선언된 함수에서 source로 가져와서 사용할수없음
+-> String command = evt.getActionCommand();
+if(command.equals("YellowButton")){}	//로 사용
+=> 또다른 방법: anonymous object에 lamda expression으로 처리

@@ -1,0 +1,84 @@
+8-3 KeyListener
+
+getKeyCode()	//return type: int , esc, ctrl, 화살표등등 , press가 의미가있음
+getKeyChar()	//return type: char, 알파벳, ''를 이용해 비교, keycode도 사용가능하지만 관용적으로, typing이 의미가 있음
+getModifiers()	//shift나 ctrl등이 같이 눌러졌는가 확인할때
+
+public boolean isFocusable(){ return true;}
+//해당 component가 focus를 가질 수 있는가
+// 마우스와 관련없는 프로그램에는 설정해줘야함(예기치 못한 오류발생가능)
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class SketchPanel extends JPanel implements KeyListener{
+    SketchPanel(){
+        addKeyListener(this);
+    }
+
+    public void keyPressed(KeyEvent e) {    // 특수키로 입력할떄
+        int keyCode = e.getKeyCode();
+        int modifiers = e.getModifiersEx(); // modifier
+        int d;
+        if((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0) d = 5;
+        else d = 1;
+        if(keyCode == KeyEvent.VK_LEFT) add(-d, 0);
+        else if (keyCode == KeyEvent.VK_RIGHT) add(d, 0);
+        else if (keyCode == KeyEvent.VK_UP) add(0, -d);
+        else if (keyCode == KeyEvent.VK_DOWN) add(0, d);
+    }
+
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+    public void keyTyped(KeyEvent e) {  // charter 키로 입력할때
+        char keyChar = e.getKeyChar();
+        int d;
+        if (Character.isUpperCase(keyChar)) {   // 대문자로 쓰는 경우
+            d = 5;
+            keyChar = Character.toLowerCase(keyChar);
+        }
+        else
+            d = 1;
+        if(keyChar == 'h') add(-d, 0);
+        else if (keyChar == 'l') add(d, 0);
+        else if (keyChar == 'k') add(0, -d);
+        else if (keyChar == 'j') add(0, d);
+    }
+    public boolean isFocusTraversable(){return true;}   // 마우스와 관련없는 프로그램엔 필수로 작성
+
+    public void add(int dx, int dy) {
+        end.x += dx;
+        end.y += dy;
+        Graphics g = getGraphics(); //Graphics객체 받아오기
+        g.drawLine(start.x, start.y, end.x, end.y);
+        g.dispose();
+        start.x = end.x;
+        start.y = end.y;
+    }
+
+    private Point start = new Point(0, 0);
+    private Point end = new Point(0, 0);
+}
+class SketchFrame extends JFrame{
+    SketchFrame(){
+        setTitle("Sketch");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        contentPane.add(new SketchPanel());
+    }
+}
+public class Sketch {
+    public static void main(String[] args) {
+        JFrame frame = new SketchFrame();
+        frame.setVisible(true);
+    }
+}

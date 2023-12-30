@@ -1,0 +1,72 @@
+9-15 grid layout
+
+Panel의 Constructor안 또는 Panel의 reference + .setLayout으로 설정
+ex)
+1. Constructor안
+setLayout(new GridLayout(4,4));	// 4행4열 Grid Layout
+
+2. Panel의 Reference에 함수 사용
+JPanel p = new JPanel();
+p.setLayout(new GridLayout(4,4));
+
+* 내부에 버튼이 16개면 자동으로 4x4에 배치됨
+
+-----------------------------------------------------
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+class CalculaterPane extends JPanel{
+    private JTextField display;
+    private double arg = 0;
+    private String op = "=";
+    private boolean start = true;
+    CalculaterPane(){
+        setLayout(new BorderLayout());
+        // 계산기에서 계산하는화면은 "North", 4x4버튼있는 panel은 "South"에 배치
+
+        display = new JTextField("0");
+        display.setEditable(false);
+        add(display, "North");
+
+        JPanel p = new JPanel();
+        p.setLayout(new GridLayout(4, 4));  // Panel p의 Layout을 4행4열 Grid Layout으로 set
+        String buttons = "789/456*123-0.=+"; // button 16개 생성하는 매크로
+        for (int i = 0; i < buttons.length(); i++) {
+            addButton(p, buttons.substring(i, i + 1));
+        }
+        add(p, "Center");
+    }
+
+    private void addButton(Container c, String s) {
+        JButton b = new JButton(s);
+        c.add(b);
+    }
+}
+class CalculatorFrame extends JFrame{
+    CalculatorFrame(){
+        setTitle("Calculator");
+        setSize(200, 200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        Container contentPane = getContentPane();
+        contentPane.add(new CalculaterPane());
+    }
+}
+public class Calculator {
+    public static void main(String[] args) {
+        JFrame frame = new CalculatorFrame();
+        frame.setVisible(true);
+    }
+}
+// 이하 코드는 계산기 알고리즘이므로 생략
+
+
+
+
+
+
+
+

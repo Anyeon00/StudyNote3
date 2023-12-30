@@ -1,0 +1,59 @@
+[이벤트핸들러를 정의하는 주요 인터페이스들]
+-마우스를 조작할 때 호출되는 이벤트핸들러들 정의
+public interface MouseListner{
+	public void mouseClicked(MouseEvent e);
+	public void mousePressed(MouseEvent e);
+	public void mouseReleased(MouseEvent e);
+	public void mouseEntered(MouseEvent e);
+	public void mouseExited(MouseEvent e);
+}
+
+-마우스를 움직일 때 호출되는 이벤트핸들러들 정의
+public interface MouseMotionListner{
+	public void mouseDragged(MouseEvent e);
+	public void mouseMoved(MouseEvent e);
+}
+
+-윈도 상태 변화와 관련된 이벤트핸들러들 정의
+public interface WindowListner{
+	public void windowOpent(WindowEvent e);
+	public void windowClosing(WindowEvent e);
+	public void windowClosed(WindowEvent e);
+	public void windowIconified(WindowEvent e);
+	public void windowDeiconified(WindowEvent e);
+	public void windowActivated(WindowEvent e);
+	public void windowDeactivated(WindowEvent e);
+}
+
+-버튼을 클릭할 때 호출되는 이벤트핸들러 정의
+public interface ActionListner{
+	public void actionPerformed(ActionEvent e);
+}
+
+-키보드를 누를 때 호출되는 이벤트핸들러들 정의
+public interface KeyListner{
+	public void keyTyped(KeyEvent e);	//일반적인키
+	public void keyPressed(KeyEvent e);	//ctrl,esc,shift 등의 키
+	public void keyReleased(KeyEvent e);
+}
+
+-스크롤바를 조작 할 때 호출되는 이벤트핸들러 정의
+public interface AdjustmentListner{
+	public void adjustmentValueChanged(AdjustmentEvent e);
+}
+
+-텍스트에 입력할 때 호출되는 이벤트핸들러 정의
+public interface TextListner{
+	public void textValueChanged(TextEvent e);
+}
+
+-체크박스나 리스트의 상태 변화시 호출되는 이벤트핸들러 정의
+public interface ItemListener{
+	void itemStateChanged(ItemEvent e);
+}
+
+-윈도가 활성화 되거나 비활성화 될 때 호출되는 이벤트핸들러 정의
+public interface FocusListner{
+	public void focusGained(FocusEvent e);
+	public void focusLost(FocusEvent e);
+}

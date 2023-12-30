@@ -1,0 +1,185 @@
+9-8-1 MVC 모델
+
+GUI를 갖는 S/W의 설계 패러다임
+
+Model: 응용 영역의 자료구조(저장/로딩)
+View: 화면 출력 담당
+Controller: 이벤트 처리를 통한 모델의 상태 변화 담당( _메뉴같은 거 담당)
+
+ex)
+사용자 -> Controller (키보드/마우스입력)
+Controller -> Model (자료구조에 적용)
+Model -> View (화면에 출력)
+
+* Model과 View&Controler 간 소통은 inteface의 method를 통해서(getSize(), getElementAt()/ add() 등)
+
+Java에서 JList, JTable, JTree에 적용
+
+------------------------------------------
+MVC모델 적용예(JList)
+
+* Frame의 Constructor에서 Component만드는일이 <VIEW>에 해당
+* ActionPerformed함수가 <Controller>역할
+* ListModel를 구현하는(or extends AbstractListModel) <Model> 객체를 만든 후 JList에 사용
+
+ex) Frame에서(View에 해당)
+(-> 만든 Model객체 instanciation)
+-> 해당 Model객체를 argument로 받는 JList 생성 ( _Model객체 대신 다른 Collection객체도 사용가능)
+-> 해당 JList를 argument로 해서 ScrollPane 생성
+-> Panel p에 p.add(scrollPane); ScrollPane이 중간에 배치된 판넬 p
+-> getContentPane().add(p, "South"); // 그 p 판넬을 화면 하단에 배치
+
+
+Model객체에서 
+-> JList에 쓰일 자료구조 객체
+-> 자료구조 생성(Vector, LinkedList, Stack...)
+-> 인터페이스 ListModel을 implements (아래 함수 4개 반드시 구현)
+: public int getSize(){	// List length구하기
+   return 자료구조.size();
+   } 
+ public Object getElementAt(int index){  //각 index의 값
+   return 자료구조.elementAt(index);
+ }
+ public void addListDataListener(ListDataListener l) {}
+ public void removeListDataListener(ListDataListener l) {}
+
+
+* Model객체.updateUI();	
+// ListModel의 함수
+// Model의 자료구조의 변경사항을 View에 적용(User Interface 갱신)
+// 예시) actionPerformed() 에서 사용
+
+* 일반적으로 Model객체에서 
+ public void addListDataListener(ListDataListener l) {}
+ public void removeListDataListener(ListDataListener l) {}
+이 두 함수는 잘 안씀
+-> ListModel 구현 대신 AbstractListModel상속해서 나머지 2개만 override해서 사용
+    (ListModel = Listener , AbstractListModel = Adapter)(이미 모든 함수를 구현하고 있는 객체임)
+
+----------------------------------------------------------------------------------
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Vector;
+class ListTestPane extends JPanel{
+    private String text;
+    public ListTestPane(){
+        setAttribute("");
+    }
+
+    public void setAttribute(String w) {
+        text = "The " + w + "fox jumps over the lazy dog.";
+        repaint();
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawString(text,0,50);
+    }
+}
+class ListFrame extends JFrame implements ListSelectionListener {   // View에 해당
+    JList wordList;
+    private MyListModel myModel;
+    private ListTestPane panel;
+    JScrollPane scrollPane;
+    private JButton addButton;
+    private JTextField field;
+    ListFrame(){
+        setTitle("ListTest");
+        setSize(300, 200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+
+        myModel = new MyListModel();    // 자료구조를 Model객체로 생성(extends ListModel)(모델은 독립적으로 존재)
+        wordList = new JList(myModel);  // Model객체로 JList생성
+        scrollPane = new JScrollPane(wordList);     // ScrollPane <- JList(Model)
+        /*
+        wordList = new JList();
+        wordList.setModel(myModel); 이렇게 써도 됨
+         */
+
+        addButton = new JButton("Add");
+        field = new JTextField(10); // 직접 친 text도 List에 추가할수 있는 기능
+
+        JPanel p = new JPanel();
+        p.add(scrollPane);
+        p.add(addButton);
+        p.add(field);
+
+        addButton.addActionListener((e) -> {    // 컨트롤러에 해당
+            myModel.add(field.getText());
+            wordList.updateUI();    // Model의 변경사항을 view에 적용
+        });
+        wordList.addListSelectionListener(this);
+
+        getContentPane().add(p, "South");
+        panel = new ListTestPane();
+        getContentPane().add(panel, "Center");
+    }
+    
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        JList source = (JList)e.getSource();
+        Object[] values = source.getSelectedValues();
+
+        String text = "";
+        for (int i = 0; i < values.length; i++) {
+            String word = (String) values[i];
+            text += word + "";
+        }
+        panel.setAttribute(text);
+    }
+}
+class MyListModel implements ListModel{    // Model객체 _JList에 들어갈 자료구조 객체 //or extends AbstractListModel
+    Vector list = new Vector();
+    MyListModel(){
+        list.add("quick");
+        list.add("brown");
+        list.add("hungry");
+        list.add("wild");
+        list.add("silent");
+    }
+    @Override
+    public int getSize() {
+        return list.size();
+    }
+    @Override
+    public Object getElementAt(int index) {
+        return list.elementAt(index);
+    }
+    @Override
+    public void addListDataListener(ListDataListener l) {}
+    @Override
+    public void removeListDataListener(ListDataListener l) {}
+    public void add(String s){
+        list.add(s);
+    }
+}
+public class ListTest {
+    public static void main(String[] args) {
+        JFrame frame = new ListFrame();
+        frame.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ㄴ
+-> 

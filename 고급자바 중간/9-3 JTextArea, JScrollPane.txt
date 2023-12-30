@@ -1,0 +1,72 @@
+9-3 JTextArea
+
+프로그램 구조:
+ContentPane
+-JScrollPane(Center)
+--JTextArea
+-JPanel(South)
+--JButton
+
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+class TextAreaFrame extends JFrame implements ActionListener{
+    private JButton insertButton;
+    private JButton wrapButton;
+    private JButton noWrapButton;
+    private JTextArea textArea;
+    private JScrollPane scrollPane;
+    TextAreaFrame(){
+        setTitle("TextAreaTest");
+        setSize(300,200);
+        addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
+        JPanel p = new JPanel();
+        insertButton = new JButton("Insert");
+        p.add(insertButton);
+        insertButton.addActionListener(this);
+
+        wrapButton = new JButton("Wrap");
+        p.add(wrapButton);
+        wrapButton.addActionListener(this);
+
+        noWrapButton = new JButton("NO wrap");
+        p.add(noWrapButton);
+        noWrapButton.addActionListener(this);
+
+        getContentPane().add(p, "South");   // contentPane에 button들 붙은 JPanel p를 붙이기_border layout으로
+
+        textArea = new JTextArea(8, 40);    //row, column
+        scrollPane = new JScrollPane(textArea); // scrollPane에 textArea붙이기
+
+        getContentPane().add(scrollPane, "Center"); //contentPane에 textArea붙은 scrollPane 붙이기_border layout으로
+
+        setTitle("TextAreaTest");
+        setSize(300,300);
+    }
+    public void actionPerformed(ActionEvent e){
+        Object source = e.getSource();
+        if (source == insertButton) {
+            textArea.append("The quick brown fox jumps over the lazy dog"); // textArea에 string추가하기
+        } else if (source == wrapButton) {
+            textArea.setLineWrap(true); // 화면밖으로 나간 글자 newLine시키기
+            scrollPane.validate(); //함수호출의 결과가 화면에 바로 반영이 안되는경우, 확실하게 호출해주는 기능
+        } else if (source == noWrapButton) {
+            textArea.setLineWrap(false);
+            scrollPane.validate();
+        }
+    }
+}
+public class TextAreaTest {
+    public static void main(String[] args) {
+        JFrame frame = new TextAreaFrame();
+        frame.setVisible(true);
+    }
+}
+

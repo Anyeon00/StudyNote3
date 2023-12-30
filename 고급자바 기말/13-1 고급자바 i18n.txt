@@ -1,0 +1,25 @@
+13-1 고급자바 i18n
+
+Internationalization (= i18n)
+국제화
+한글로된 프로그램을 세계각국의 언어로 번역된 프로그램으로 만들어주는 API
+
+유니코드
+
+* InputStreamReader, OutputStreamWriter의 두번째 argument로 인코딩을 명시할수 있음
+
+* 로케일 Locale 표시법
+Date 클래스등이 명시한 Locale에 맞게 알아서 출력됨
+명시법 : <language>_<country>
+ex) en_US
+코드 :
+ex) Local.setDefault(new Locale(es,US));
+// 이 프로그램은 이 언어를 쓸겁니다 라는뜻
+
+.property 파일사용
+
+ResourceBundle클래스( hash table과 같음)
+
+쓸일은 없지만 존재나 사용법정도만 알기
+
+

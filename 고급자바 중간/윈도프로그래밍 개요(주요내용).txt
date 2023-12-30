@@ -1,0 +1,106 @@
+윈도우 프로그래밍 uml 띄워놓고 보기,프린트
+
+자주나오는 변수명 클래스이름옆에적어놓기
+ex)_selectedFigure //Figure
+
+[인터페이스]
+-실체가 없기 때문에 직접 instanciation할 수 없음
+-class에서 interface 구현
+-Dynamic Binding
+-Collection 객체
+
+[라이브러리]
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+[윈도 프로그래밍]
+<어떤 윈도>에서 <어떤 이벤트>가 발생하면
+<어떤 이벤트 핸들러>가 호출되어야 하는가
+
+[윈도 프로그래밍 절차]
+1. 화면 구성 - sequential programming(트리구조)
+2. event handler 작성&등록 - Listner interface 구현
+-----------------------------------------------------------
+1. Main에서 프레임 instanciation
+ex) JFrame 프레임이름 = new 프레임클래스();
+2. 프레임(윈도우) 활성화
+ex) 프레임이름.setVisible(true);
+3. 프레임Class 생성
+4. 이벤트 핸들러 구현
+
+[[3- 프레임Class 생성]]
+1. JFrame상속받은 프레임Class 생성
+2. Contructure에 setTitle(), setSize(), setLocation(), 
+setDefaultCloseOperation(EXIT_ON_CLOSE)
+3. Contructure에 이벤트핸들러 등록
+
+[[4- 이벤트 핸들러 구현 절차]] //아래의 이벤트핸들러 구현 방법 중 1번방법 기준
+1. 사용목적에 맞는 이벤트핸들러 함수를 찾는다
+2. 해당 메서드가 포함된 인터페이스를 찾는다
+3. 그 인터페이스를 구현한다	//모든 메서드구현
+4. 메소드를 사용할 프레임Class에 등록한다(또는 판넬에?)
+ex) addMouseListener(new MyMouseListener(this));
+//Jframe에 라이브러리 인터페이스MouseListner를 등록하는 함수
+//MyMouseListner는 인터페이스를 구현한 객체(class에서 구현하면 그 class를 parameter로)
+//인터페이스의 메서드가 어떤 프레임에서 작업하는데
+그 메서드의 인터페이스는 프레임의 정보가 없음
+-> 4번에서 등록할때 parameter로 this(이 프레임)을 넘겨줌,
+해당 인터페이스를 구현한 클래스는 
+그 프레임의 reference를 datamember로 가짐
+// Graphics 객체 instanciation 하고 함수 사용
+ex) Graphics g = frame.getGraphics();	//프레임에 그림그리는 도구를 갖고와라
+g.drawLine(~);
+* 좌표값은 MouseEvent e의 e.getX(), e.getY()로 가져옴
+* MouseLisner라는 인터페이스를 직접 클래스로 구현하는 경우를 기준
+
+[[4- 이벤트핸들러 구현 방법]] //위에 구현 절차가 아래 1번으로 들어가야하는데 쓰다보니 이렇게 됨
+1. MouseListner(인터페이스)를 구현하는 독립된 객체를 만들어 사용하는 경우- 위에 설명
+
+2. 윈도 객체가 MouseListner(인터페이스)를 구현하는 경우
+-윈도객체를 parameter로 넘겨받는 1번과 달리 그냥 윈도 객체 안에서 구현
+ex) class Frame extends JFrame implements MouseListner{
+	addMouseListener(this);	//등록할때 MouseListner를 이 윈도 객체가 구현하고 있으므로 this를 parameter로
+}
+
+3. MouseAdapter(클래스)를 상속받는 독립된 객체를 만들어 사용하는 경우(1번과 비슷)
+*라이브러리에 특정Listner인터페이스가 있으면 특정Adapter클래스가 있음
+*Adapter는 그 Listner를 implement 하고 있음(Listner인터페이스의 이벤트핸들러함수들을 전부 구현하고 있음)
+=>Adapter를 상속받은 클래스는 비어있는 다른 이벤트핸들러함수들을 직접 구현하지 않아도 되고 사용할 이벤트핸들러함수만 오버라이드하면 됨
+*다중 상속이 허용이 안되므로 2번처럼은 안됨
+
+4. 윈도객체안에서 anonymous object를 이용하여 MouseListner(인터페이스)를 구현하는 경우
+*특이한 syntax
+*클래스를 안만들고 구현하기위해 사용
+*이벤트핸들러 등록함수 addMouseListner()의 argment안에 코딩
+ex) addMouseListner(new MouseListner(){
+	여기에 MouseListner인터페이스의 모든 이벤트핸들러함수 구현
+}
+
+5. 윈도객체안에서 anonymous object를 이용하여 MouseAdapter(클래스)를 상속받아 구현하는 경우
+*특이한 syntax
+*클래스를 안만들고 구현하기위해 사용
+*이벤트핸들러 등록함수 addMouseListner()의 argument안에 코딩
+ex) addMouseListner(new MouseAdapter(){
+	3번처럼 구현할 이벤트핸들러함수만 overriding
+}	
+
+*6. 이벤트핸들러 함수가 1개만 있는 Listener(인터페이스)를 사용하는 경우
+람다 익스프레션 사용_Button기능에 자주사용
+ex) FrameConstructure(){	//프레임객체 생성자 안
+	JMenuItem openFile = new JMenuItem("열기(N)");
+	openFile.addActionListener( (e) -> 
+		{	}
+	);
+
+*7. Convenient function을 이용하는 경우(특수한 경우)
+ex) Constructer에서 add~대신
+setDefaultCloseOperation(EXIT_ON_CLOSE); //(윈도우 close할때 exit하는 핸들러)
+
+* JDrawer같이 큰 프로젝트같은 경우는 Panel클래스에 직접구현해줌(1번처럼)
+==>
+1,3,4번은 거의 사용X
+이벤트핸들러 함수를 여러개 이용하는 경우는 2번으로 
+윈도 객체서 Listner를 직접 구현,
+이벤트핸들러 함수를 하나만 이용하는 경우는 5번으로 
+윈도 객체의 이벤트핸들러 등록함수parameter에(anonymous object) 상속받아 overriding

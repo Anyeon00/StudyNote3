@@ -1,0 +1,21 @@
+9-7 Component의 Border 선 표시
+
+* radio button을 이용한 actionPerformed구현
+ex)Constructor에서
+button.setActionCommand(button1); //버튼의 이름을 이용해서 사용하기위한 함수
+ActionPerformed함수에서
+String command = group.getSelection().getActionCommand();//group은 radio button을 담고있는 group
+if (command.equals("button1")){
+  ~ } ...
+
+* Border객체 assignment
+ex) 
+Border border = BorderFactory.createLoweredBevelBorder();  //LowerBevel Border
+border = BorderFactory.createRaisedBevelBorder();  // RaisedBevel Border
+border = BorderFactory.createEtchedBorder(); // Etched Border
+border = BorderFactory.createLineBorder(Color.blue);  // Line Border
+border = BorderFactory.createMatteBorder(10,10,10,10,Color.blue); // Matte Border
+border = BorderFactory.createEmptyBorder();  // Empty Border
+
+Panel panel = new Panel();
+panel.setBorder(border);
