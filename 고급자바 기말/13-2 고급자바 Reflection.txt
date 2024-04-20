@@ -6,6 +6,7 @@ _class record객체에 들어잇음
 _Class클래스객체 
 _구현중인 interface, super class, 클래스이름, 데이터멤버, 데이터멤버의타입/이름/초기값, 멤버function, 멤버function의 이름/return type/argument, argument의 타입 
 _parse tree자료구조로 만든 객체임
+=> 이 class record에 access하는 기술이 : Reflection
 
 
 Class<T> 클래스
@@ -27,7 +28,8 @@ f.getName()	// field 네임
 
 ex)
 Class Student{~}
-Class c = Class.forName(Student);	// Student클래스에 대한 class record객체 생성
+Class c = Class.forName(Student);	
+Object o = c.newInstance();  // Student클래스에 대한 class record객체 생성
 if(c.isInterface()){		// 인터페이스인지
 
 }else if (c.getSuperClass() != null){	// 수퍼클래스잇는지
